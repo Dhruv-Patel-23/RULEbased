@@ -177,6 +177,107 @@ public class DeviceInfoExtractor {
 
 
     }
+
+
+
+    public static void Medline(String input, Set<OutputObj> objInfoList){
+
+
+
+        // Regular expression to capture REF number, UDI/DI, and Lot Numbers
+        String refRegex = "REF \\w+";
+        String udiregex = "UDI/DI\\s*\\d{14}";
+        String lotRegex = "Lot Numbers:\\s*([\\w+,\\s]+)";
+
+        // Compile the regex
+        Pattern refPattern = Pattern.compile(refRegex);
+        Matcher refMatcher = refPattern.matcher(input);
+
+        Pattern udiPattern = Pattern.compile(udiregex);
+        Matcher udiMatcher = udiPattern.matcher(input);
+
+
+        Pattern lot = Pattern.compile(lotRegex);
+        Matcher lotMatcher = lot.matcher(input);
+
+        while ((refMatcher.find()) && udiMatcher.find() && lotMatcher.find()) {
+
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.ref_number.add(refMatcher.group().substring(4));
+            deviceInfo.UDI.add(udiMatcher.group().substring(7));
+            deviceInfo.lot_number.add(lotMatcher.group().substring(13));
+
+
+
+
+            objInfoList.add(deviceInfo);
+        }
+    //----------------------------------------------------------------------------------------
+
+
+        String reorderRegex = "Reorder\\s*Number \\w+";
+        udiregex = "UDI/DI\\s\\d{14}[\\s()\\w]*,?\\s*\\d{14}[\\s()\\w]*";
+        lotRegex = "Lot Numbers:\\s*([\\w+,\\s]+)";
+
+        Pattern reorderPattern = Pattern.compile(reorderRegex);
+        Matcher reoderMatcher = reorderPattern.matcher(input);
+
+        udiPattern = Pattern.compile(udiregex);
+        udiMatcher = udiPattern.matcher(input);
+
+
+        lot = Pattern.compile(lotRegex);
+        lotMatcher = lot.matcher(input);
+
+        while (reoderMatcher.find() && udiMatcher.find() && lotMatcher.find()) {
+
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.reorder_number.add(reoderMatcher.group().substring(14));
+            deviceInfo.UDI.add(udiMatcher.group().substring(7));
+            deviceInfo.lot_number.add(lotMatcher.group().substring(13));
+
+
+
+
+            objInfoList.add(deviceInfo);
+        }
+
+
+
+
+        String prodregex = "Product\\sCode\\s[0-9A-Za-z]+";
+        udiregex = "UDI/DI\\s\\d{14}[\\s()\\w]*,?\\s*\\d{14}[\\s()\\w]*";
+        lotRegex = "Lot\\sNumbers:\\s*([\\w+,\\s]+)";
+
+        Pattern prodPattern = Pattern.compile(prodregex);
+        udiPattern=Pattern.compile(udiregex);
+        Pattern lotPattern=Pattern.compile(lotRegex);
+
+        Matcher prodMatcher = prodPattern.matcher(input);
+        udiMatcher = udiPattern.matcher(input);
+         lotMatcher = lotPattern.matcher(input);
+        System.out.println(input);
+        System.out.println("-----------------------------------");
+        while ((prodMatcher.find()) && udiMatcher.find() && lotMatcher.find()) {
+
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.product_number.add(prodMatcher.group().substring(12));
+            deviceInfo.UDI.add(udiMatcher.group().substring(6));
+            deviceInfo.lot_number.add(lotMatcher.group().substring(12));
+
+
+
+
+            objInfoList.add(deviceInfo);
+        }
+
+
+
+
+
+
+
+    }
     public static Set<OutputObj> extractDeviceInfo(String input,String firmname) {
         Set<OutputObj> objInfoList = new HashSet<>();
         if(Objects.equals(firmname, "Exactech, Inc.")) {
@@ -185,6 +286,9 @@ public class DeviceInfoExtractor {
         else if(Objects.equals(firmname, "Fresenius Medical Care Holdings, Inc.")){
             DeviceInfoExtractor.Fresenius(input,objInfoList);
 
+        }
+        else if (Objects.equals(firmname, "MEDLINE INDUSTRIES, LP - Northfield")){
+            DeviceInfoExtractor.Medline(input,objInfoList);
         }
         return objInfoList;
 

@@ -25,7 +25,7 @@ public class Main {
             List<RecallResult> recalls = recallData.results;
 
             // Array of firm names to filter by
-            String[] firmNames = {"Exactech, Inc.","Fresenius Medical Care Holdings, Inc."};
+            String[] firmNames = {"Exactech, Inc.","Fresenius Medical Care Holdings, Inc.","MEDLINE INDUSTRIES, LP - Northfield"};
 
             // Set to hold unique filtered results
             Set<RecallResult> uniqueFilteredRecalls = new HashSet<>();
@@ -60,6 +60,7 @@ public class Main {
 
 
             }
+            List<RecallResult> temp = new ArrayList<>(uniqueFilteredRecalls);
 
             // Output file path for device information
 
@@ -83,7 +84,7 @@ public class Main {
 //            }
 
             // Write filtered results to a file
-           // writeFilteredResultsToFile(new ArrayList<>(uniqueFilteredRecalls), "/Users/ddhpatel/Desktop/FilteredRecallsOutput.txt");
+            writeFilteredResultsToFile(temp, "./test.txt");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -92,6 +93,12 @@ public class Main {
 
     // Function to filter recall results by an array of firm names
     public static List<RecallResult> filterByFirmNames(List<RecallResult> recalls, String firmName) {
+        return recalls.stream()
+                .filter(recall -> firmName.equals(recall.recalling_firm))
+                .toList();
+    }
+
+        public static List<RecallResult> filterByFirmName(List<RecallResult> recalls, String firmName) {
         return recalls.stream()
                 .filter(recall -> firmName.equals(recall.recalling_firm))
                 .toList();

@@ -19,6 +19,8 @@ public class OutputObj {
     public ArrayList<String> UPN = new ArrayList<>();
     public ArrayList<String> kit_number = new ArrayList<>();
     public ArrayList<String> ref_number = new ArrayList<>();
+    public ArrayList<String> reorder_number = new ArrayList<>();
+
 
     @Override
     public String toString() {
@@ -38,6 +40,7 @@ public class OutputObj {
                 "\"UPN\" : \"" + UPN + '\"' + ",\n" +
                 "\"kit_number\" : \"" + kit_number + '\"' + ",\n" +
                 "\"ref_number\" : \"" + ref_number + '\"' + ",\n" +
+                "\"reorder_number\" : \"" + reorder_number + '\"' + ",\n" +
                 '}';
 
 
