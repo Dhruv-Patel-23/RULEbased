@@ -30,36 +30,60 @@ public class Main {
             // Set to hold unique filtered results
             Set<RecallResult> uniqueFilteredRecalls = new HashSet<>();
 
+
+
             // Filter results for each firm name
             for (String firmName : firmNames) {
+                uniqueFilteredRecalls.clear();
+                String outputFilePath = firmName + ".txt";
                 List<RecallResult> filteredRecalls = filterByFirmNames(recalls, firmName);
                 uniqueFilteredRecalls.addAll(filteredRecalls);
+
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
+                    writer.write("Total number of objects identified: " + uniqueFilteredRecalls.size() + "\n");
+                    int i = 1;
+                    for (RecallResult r : uniqueFilteredRecalls) {
+                        writer.write("\nObject Number: " + i + "\n");
+
+                        Set<OutputObj> deviceInfoList = extractDeviceInfo(r.product_description + " " + r.code_info,r.recalling_firm);
+                        for (OutputObj deviceInfo : deviceInfoList) {
+                            writer.write(deviceInfo.toString());
+                            writer.write("\n");  // New line after each device info
+                        }
+                        i++;
+                    }
+                    System.out.println("Device information written to " + outputFilePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+
             }
 
             // Output file path for device information
-            String outputFilePath = "device_info.txt";
 
             // Write device information to file
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
-                writer.write("Total number of objects identified: " + uniqueFilteredRecalls.size() + "\n");
-                int i = 1;
-                for (RecallResult r : uniqueFilteredRecalls) {
-                    writer.write("\nObject Number: " + i + "\n");
-
-                    Set<OutputObj> deviceInfoList = extractDeviceInfo(r.product_description + " " + r.code_info,r.recalling_firm);
-                    for (OutputObj deviceInfo : deviceInfoList) {
-                        writer.write(deviceInfo.toString());
-                        writer.write("\n");  // New line after each device info
-                    }
-                    i++;
-                }
-                System.out.println("Device information written to " + outputFilePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
+//                writer.write("Total number of objects identified: " + uniqueFilteredRecalls.size() + "\n");
+//                int i = 1;
+//                for (RecallResult r : uniqueFilteredRecalls) {
+//                    writer.write("\nObject Number: " + i + "\n");
+//
+//                    Set<OutputObj> deviceInfoList = extractDeviceInfo(r.product_description + " " + r.code_info,r.recalling_firm);
+//                    for (OutputObj deviceInfo : deviceInfoList) {
+//                        writer.write(deviceInfo.toString());
+//                        writer.write("\n");  // New line after each device info
+//                    }
+//                    i++;
+//                }
+//                System.out.println("Device information written to " + outputFilePath);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
 
             // Write filtered results to a file
-            writeFilteredResultsToFile(new ArrayList<>(uniqueFilteredRecalls), "/Users/ddhpatel/Desktop/FilteredRecallsOutput.txt");
+           // writeFilteredResultsToFile(new ArrayList<>(uniqueFilteredRecalls), "/Users/ddhpatel/Desktop/FilteredRecallsOutput.txt");
 
         } catch (IOException e) {
             e.printStackTrace();
