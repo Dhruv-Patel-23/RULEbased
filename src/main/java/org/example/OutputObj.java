@@ -17,6 +17,7 @@ public class OutputObj {
     public ArrayList<String> product_number = new ArrayList<>();
     public ArrayList<String> part_number = new ArrayList<>();
     public ArrayList<String> UPN = new ArrayList<>();
+    public ArrayList<String> UPC = new ArrayList<>();
     public ArrayList<String> kit_number = new ArrayList<>();
     public ArrayList<String> ref_number = new ArrayList<>();
     public ArrayList<String> reorder_number = new ArrayList<>();
@@ -38,6 +39,7 @@ public class OutputObj {
                 "\"product_number\" : \"" + product_number + '\"' + ",\n" +
                 "\"part_number\" : \"" + part_number + '\"' + ",\n" +
                 "\"UPN\" : \"" + UPN + '\"' + ",\n" +
+                "\"UPC\" : \"" + UPC + '\"' + ",\n" +
                 "\"kit_number\" : \"" + kit_number + '\"' + ",\n" +
                 "\"ref_number\" : \"" + ref_number + '\"' + ",\n" +
                 "\"reorder_number\" : \"" + reorder_number + '\"' + ",\n" +

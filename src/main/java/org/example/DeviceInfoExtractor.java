@@ -185,9 +185,9 @@ public class DeviceInfoExtractor {
 
 
         // Regular expression to capture REF number, UDI/DI, and Lot Numbers
-        String refRegex = "REF \\w+";
-        String udiregex = "UDI/DI\\s*\\d{14}";
-        String lotRegex = "Lot Numbers:\\s*([\\w+,\\s]+)";
+        String refRegex = "REF\\s*(\\w+)";
+        String udiregex = "UDI/DI:?\\s*(\\w+)";
+        String lotRegex = "Lot\\s*(Numbers)?(code)?:?\\s*([\\w,\\s]+)";
 
         // Compile the regex
         Pattern refPattern = Pattern.compile(refRegex);
@@ -203,9 +203,37 @@ public class DeviceInfoExtractor {
         while ((refMatcher.find()) && udiMatcher.find() && lotMatcher.find()) {
 
             OutputObj deviceInfo = new OutputObj();
-            deviceInfo.ref_number.add(refMatcher.group().substring(4));
-            deviceInfo.UDI.add(udiMatcher.group().substring(7));
-            deviceInfo.lot_number.add(lotMatcher.group().substring(13));
+            deviceInfo.ref_number.add(refMatcher.group(1));
+            deviceInfo.UDI.add(udiMatcher.group(1));
+            deviceInfo.lot_number.add(lotMatcher.group(3));
+
+
+
+
+            objInfoList.add(deviceInfo);
+        }
+    //----------------------------------------------------------------------------------------
+         refRegex = "REF\\s*(\\w+)";
+        udiregex = "GTIN:?\\s*(\\w+)";
+        lotRegex = "Lot\\s*Numbers:?\\s*([\\w,\\s]+)";
+
+        // Compile the regex
+         refPattern = Pattern.compile(refRegex);
+         refMatcher = refPattern.matcher(input);
+
+         udiPattern = Pattern.compile(udiregex);
+         udiMatcher = udiPattern.matcher(input);
+
+
+         lot = Pattern.compile(lotRegex);
+         lotMatcher = lot.matcher(input);
+
+        while ((refMatcher.find()) && udiMatcher.find() && lotMatcher.find()) {
+
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.ref_number.add(refMatcher.group(1));
+            deviceInfo.GTIN.add(udiMatcher.group(1));
+            deviceInfo.lot_number.add(lotMatcher.group(1));
 
 
 
@@ -235,10 +263,6 @@ public class DeviceInfoExtractor {
             deviceInfo.reorder_number.add(reoderMatcher.group().substring(14));
             deviceInfo.UDI.add(udiMatcher.group().substring(7));
             deviceInfo.lot_number.add(lotMatcher.group().substring(13));
-
-
-
-
             objInfoList.add(deviceInfo);
         }
 
@@ -256,8 +280,7 @@ public class DeviceInfoExtractor {
         Matcher prodMatcher = prodPattern.matcher(input);
         udiMatcher = udiPattern.matcher(input);
          lotMatcher = lotPattern.matcher(input);
-        System.out.println(input);
-        System.out.println("-----------------------------------");
+
         while ((prodMatcher.find()) && udiMatcher.find() && lotMatcher.find()) {
 
             OutputObj deviceInfo = new OutputObj();
@@ -272,12 +295,748 @@ public class DeviceInfoExtractor {
         }
 
 
+    //--------------------------------------
+
+        String reg1 = "Item\\s*Number:\\s*(\\w+)";
+        String reg3 = "UDI/GTIN\\s*[\\w()]*:?\\s*(\\w+),\\s*UDI/GTIN\\s*[\\w()]*:?\\s*(\\w+)";
+        String reg2 = "Lot\\s*Numbers?:?\\s*(\\w+)";
+
+        Pattern regPattern1 = Pattern.compile(reg1);
+        Pattern regPattern2 = Pattern.compile(reg2);
+        Pattern regPattern3 = Pattern.compile(reg3);
+
+        Matcher regMatcher1 = regPattern1.matcher(input);
+        Matcher regMatcher2 = regPattern2.matcher(input);
+        Matcher regMatcher3 = regPattern3.matcher(input);
+
+        while (regMatcher1.find() && regMatcher2.find() && regMatcher3.find()) {
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.item_number.add(regMatcher1.group(1));
+            deviceInfo.UDI.add(regMatcher3.group(1));
+            deviceInfo.UDI.add(regMatcher3.group(2));
+            deviceInfo.lot_number.add(regMatcher2.group(1));
+
+            objInfoList.add(deviceInfo);
+        }
+
+
+
+    }
+
+    public static void Boston(String input, Set<OutputObj> objInfoList){
+
+        String modelRegex = "MODEL\\s*-\\s*[\\w\\s]*\\(\\w*\\)";
+        String refRegex = "REF\\s*\\w*";
+        String udiRegex = "UDI/DI\\s*\\w{14}";
+        String batchRegex = "Batch\\s*Numbers?:[\\s\\w,]+";
+
+        Pattern modelPattern = Pattern.compile(modelRegex);
+        Pattern refPattern = Pattern.compile(refRegex);
+        Pattern udiPattern = Pattern.compile(udiRegex);
+        Pattern batchPattern = Pattern.compile(batchRegex);
+
+
+        Matcher modelMatcher = modelPattern.matcher(input);
+        Matcher refMatcher = refPattern.matcher(input);
+        Matcher udiMatcher = udiPattern.matcher(input);
+        Matcher batchMatcher = batchPattern.matcher(input);
+
+        while ((refMatcher.find()) && udiMatcher.find() && modelMatcher.find() && batchMatcher.find()) {
+
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.ref_number.add(refMatcher.group().substring(4));
+            deviceInfo.UDI.add(udiMatcher.group().substring(6));
+            deviceInfo.model_number.add(modelMatcher.group().substring(8));
+            deviceInfo.batch_number.add(batchMatcher.group().substring(15));
+
+
+
+
+
+            objInfoList.add(deviceInfo);
+        }
+
+    //--------------------------------------------------------------------------------------------------------
+
+        String gtinRegex1 = "GTIN numbers in the U.S.:[\\w\\s,]*";
+        String gtinRegex2 = "GTIN numbers OUS:[\\w\\s,]*";
+
+        Pattern gtinPattern1 = Pattern.compile(gtinRegex1);
+        Pattern gtinPattern2 = Pattern.compile(gtinRegex2);
+
+        Matcher gtinMatcher1 = gtinPattern1.matcher(input);
+        Matcher gtinMatcher2 = gtinPattern2.matcher(input);
+
+        while ((gtinMatcher1.find()) && gtinMatcher2.find()) {
+
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.GTIN.add(gtinMatcher1.group().substring(25));
+            deviceInfo.GTIN.add(gtinMatcher2.group().substring(17));
+
+            deviceInfo.serial_number.add("All serial numbers");
+
+
+
+
+
+
+            objInfoList.add(deviceInfo);
+        }
+        //--------------------------------------------------------------------------------------------------------
+
+
+
+
+        String catalogRegex = "Catalog\\s*number\\s*\\w*";
+        gtinRegex1 = "GTIN\\s*\\w*";
+        batchRegex="Lot[\\w/\\s]*:\\s*[\\w\\s,]*";
+
+        Pattern catalogPattern = Pattern.compile(catalogRegex);
+         gtinPattern1 = Pattern.compile(gtinRegex1);
+         batchPattern = Pattern.compile(batchRegex);
+
+        // Create matchers for the input string
+        Matcher catalogMatcher = catalogPattern.matcher(input);
+        gtinMatcher1 = gtinPattern1.matcher(input);
+        batchMatcher = batchPattern.matcher(input);
+
+
+
+        while ((gtinMatcher1.find()) && catalogMatcher.find() && batchMatcher.find()) {
+
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.GTIN.add(gtinMatcher1.group().substring(5));
+            deviceInfo.catalog_number.add(catalogMatcher.group().substring(15));
+            deviceInfo.batch_number.add(batchMatcher.group().substring(19));
+
+            objInfoList.add(deviceInfo);
+        }
+
+        //--------------------------------------------------------------------------------------------------------
+
+
+        String regexGTIN = "GTIN\\):\\s*(\\d+)";
+        String regexUPN = "(Outer\\s*box\\s*UPN?#\\s*([A-Za-z0-9]+),\\s*Inner\\s*box\\s*UPN\\s*#\\s*([A-Za-z0-9]+))";
+        String regexLotBatch = "Lot\\s*/\\s*Batch\\s*#?\\s([\\d,\\s]+)";
+
+        // Compile the regex patterns
+        Pattern patternGTIN = Pattern.compile(regexGTIN);
+        Pattern patternUPN = Pattern.compile(regexUPN);
+        Pattern patternLotBatch = Pattern.compile(regexLotBatch);
+
+        // Matchers for each regex pattern
+        Matcher matcherGTIN = patternGTIN.matcher(input);
+        Matcher matcherUPN = patternUPN.matcher(input);
+        Matcher matcherLotBatch = patternLotBatch.matcher(input);
+
+        // Store results in lists
+
+        List<String> gtins = new ArrayList<>();
+        List<String[]> upns = new ArrayList<>();
+        List<String[]> lotBatches = new ArrayList<>();
+
+        // Extract GTINs
+
+        while(matcherGTIN.find() && matcherUPN.find() && matcherLotBatch.find()){
+            OutputObj deviceInfo = new OutputObj();
+
+            deviceInfo.GTIN.add(matcherGTIN.group(1));
+            deviceInfo.UPN.add(matcherUPN.group(2));
+            deviceInfo.UPN.add( matcherUPN.group(3));
+            deviceInfo.lot_number.add(String.join(", ",matcherLotBatch.group(1).trim().split(",\\s*")));
+
+
+            objInfoList.add(deviceInfo);
+        }
+        //--------------------------------------------------------------------------------------------------------
+
+        regexUPN = "UPN:\\s*\\w+";
+        gtinRegex1 ="GTIN:\\s*\\w+";
+        regexLotBatch ="Lot\\s*Numbers?:[\\s,\\d]+";
+
+        patternUPN = Pattern.compile(regexUPN);
+        gtinPattern1 = Pattern.compile(gtinRegex1);
+        patternLotBatch = Pattern.compile(regexLotBatch);
+
+
+        matcherUPN = patternUPN.matcher(input);
+        gtinMatcher1 = gtinPattern1.matcher(input);
+        matcherLotBatch = patternLotBatch.matcher(input);
+
+
+        while(gtinMatcher1.find() && matcherUPN.find() && matcherLotBatch.find()){
+            OutputObj deviceInfo = new OutputObj();
+
+            deviceInfo.GTIN.add(gtinMatcher1.group().substring(6));
+            deviceInfo.UPN.add(matcherUPN.group().substring(5));
+
+            deviceInfo.lot_number.add(String.join(", ",matcherLotBatch.group().trim().split(",\\s*")).substring(13));
+
+
+            objInfoList.add(deviceInfo);
+        }
+
+
+//--------------------------------------------------------------------------------------------------------
+
+        String regex = "UPN\\s([A-Za-z0-9]+),\\sGTIN\\s\\(UDI-DI\\)\\s(\\d+),\\sLots?\\s([\\d,\\s]+)";
+
+        // Compile the regex pattern
+        Pattern pattern = Pattern.compile(regex);
+
+        // Matcher for the regex pattern
+        Matcher matcher = pattern.matcher(input);
+
+
+        // Extract matches
+        while (matcher.find()) {
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.UPN.add(matcher.group(1));
+            deviceInfo.GTIN.add(matcher.group(2));
+            deviceInfo.lot_number.add(String.join(",",matcher.group(3).trim().split(",\\s*")));
+            objInfoList.add(deviceInfo);
+        }
+//---------------------------------------------------------------------------------------------------------
+
+         regex = "([a-z])\\)\\s([A-Za-z0-9]+),\\sUDI/DI\\s(\\d+),\\sALL\\sLOT\\sCODES";
+
+        // Compile the regex pattern
+         pattern = Pattern.compile(regex);
+
+        // Matcher for the regex pattern
+         matcher = pattern.matcher(input);
+
+        while (matcher.find()) {
+            OutputObj deviceInfo = new OutputObj();
+
+            deviceInfo.UPN.add(matcher.group(2));
+            deviceInfo.UDI.add(matcher.group(3));
+            deviceInfo.lot_number.add("ALL LOT CODES");
+
+            objInfoList.add(deviceInfo);
+        }
+
+        //--------------------------------------------------------------------------------------------------
+
+
+        String regex4 = "REF\\s*\\w*", regex2="UDI/DI\\s*\\d{14}",regex3="Lot\\s*Numbers?:[\\s,\\d]*";
+
+        // Compile the regex pattern
+        Pattern pattern4 = Pattern.compile(regex4);
+
+        Pattern pattern2 = Pattern.compile(regex2);
+
+        Pattern pattern3 = Pattern.compile(regex3);
+
+        // Matcher for the regex pattern
+        Matcher matcher4 = pattern4.matcher(input);
+
+        Matcher matcher2 = pattern2.matcher(input);
+
+        Matcher matcher3 = pattern3.matcher(input);
+
+
+        // Extract matches
+        while (matcher4.find() && matcher2.find() && matcher3.find()) {
+
+            OutputObj deviceInfo = new OutputObj();
+
+            deviceInfo.ref_number.add(matcher4.group().substring(4));
+            deviceInfo.UDI.add(matcher2.group().substring(8));
+            deviceInfo.lot_number.add(String.join(",",matcher3.group().trim().split(",\\s*")).substring(13));
+
+
+            objInfoList.add(deviceInfo);
+        }
+
+
+//        regexUPN = "UPN\\s*\\w+";
+//        gtinRegex1 ="GTIN\\s*\\(UDI-DI\\)\\s*\\w+";
+//        regexLotBatch ="Lots?\\s*[\\s,\\d]+";
+//
+//        patternUPN = Pattern.compile(regexUPN);
+//        gtinPattern1 = Pattern.compile(gtinRegex1);
+//        patternLotBatch = Pattern.compile(regexLotBatch);
+//
+//
+//        matcherUPN = patternUPN.matcher(input);
+//        gtinMatcher1 = gtinPattern1.matcher(input);
+//        matcherLotBatch = patternLotBatch.matcher(input);
+//
+//
+//        while(matcherUPN.find() && gtinMatcher1.find() &&  matcherLotBatch.find()){
+//            OutputObj deviceInfo = new OutputObj();
+//
+//            deviceInfo.GTIN.add(gtinMatcher1.group().substring(4));
+//            deviceInfo.UPN.add(matcherUPN.group().substring(13));
+//
+//            deviceInfo.lot_number.add(String.join(", ",matcherLotBatch.group().trim().split(",\\s*")).substring(4));
+//
+//
+//            objInfoList.add(deviceInfo);
+//        }
+
+
+//
+//        while (matcherGTIN.find()) {
+//            gtins.add(matcherGTIN.group(1));
+//        }
+//
+//        // Extract UPNs
+//        while (matcherUPN.find()) {
+//            upns.add(new String[]{matcherUPN.group(2), matcherUPN.group(3)});
+//        }
+//
+//        // Extract Lot/Batch numbers
+//        while (matcherLotBatch.find()) {
+//            String[] lots = matcherLotBatch.group(1).trim().split(",\\s*");
+//            lotBatches.add(lots);
+//        }
+//
+//        // Print results, ensuring we respect the correlation
+//        for (int i = 0; i < gtins.size(); i++) {
+//            OutputObj deviceInfo = new OutputObj();
+//
+//            if (i < upns.size() && i < lotBatches.size()) {
+//                String[] upnPair = upns.get(i);
+//                String[] lots = lotBatches.get(i);
+//                String gtin = gtins.get(i);
+//
+//                deviceInfo.GTIN.add(gtin);
+//               deviceInfo.UPN.add(upnPair[0]);
+//                deviceInfo.UPN.add(upnPair[1]);
+//                deviceInfo.lot_number.add(String.join(", ", lots));
+//
+//            }
+
+
+        //}
 
 
 
 
 
     }
+
+
+
+    public static void Cardinal (String input, Set<OutputObj> objInfoList){
+
+    String reg1 ="Model\\s*\\d*";
+    String reg2="Lot\\s*#\\w+";
+    String reg3 = "UDI-?/?DI:\\s*[\\w\\s(),]+";
+
+    Pattern regPattern1 = Pattern.compile(reg1);
+    Pattern regPattern2 = Pattern.compile(reg2);
+    Pattern regPattern3 = Pattern.compile(reg3);
+
+    Matcher regMatcher1 = regPattern1.matcher(input);
+    Matcher regMatcher2 = regPattern2.matcher(input);
+    Matcher regMatcher3 = regPattern3.matcher(input);
+
+    while(  regMatcher1.find()  && regMatcher2.find() && regMatcher3.find() ){
+        OutputObj deviceInfo = new OutputObj();
+        deviceInfo.model_number.add(regMatcher1.group().substring(6));
+        deviceInfo.lot_number.add(regMatcher2.group().substring(5));
+        deviceInfo.UDI.add(regMatcher3.group().substring(8));
+
+        objInfoList.add(deviceInfo);
+
+
+
+
+    }
+
+
+    //-----------------------------------------------------------------------
+
+       reg1= "REF\\s*[\\w-]+";
+        reg2="UDI/DI\\s*\\d{14}\\s*\\(Case\\),(\\s*\\d{14}\\s*\\(Box\\),)?\\s*\\s*\\d{14}\\s*\\(Each\\)";
+        reg3 = "Lot\\s*Numbers?:[\\w\\s,]+";
+
+         regPattern1 = Pattern.compile(reg1);
+         regPattern2 = Pattern.compile(reg2);
+         regPattern3 = Pattern.compile(reg3);
+
+         regMatcher1 = regPattern1.matcher(input);
+         regMatcher2 = regPattern2.matcher(input);
+         regMatcher3 = regPattern3.matcher(input);
+
+        while(  regMatcher1.find()  && regMatcher2.find() && regMatcher3.find() ){
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.ref_number.add(regMatcher1.group().substring(4));
+            deviceInfo.UDI.add(regMatcher2.group().substring(7));
+            deviceInfo.lot_number.add(regMatcher3.group().substring(13));
+
+            objInfoList.add(deviceInfo);
+
+
+
+
+        }
+
+        //--------------------------------------------------
+
+        String regex = "Cat\\.\\s*(\\w+)\\s*-\\s*Lot\\s*#(\\w+),\\s*E?e?xp\\.\\s[\\d/]+,\\s*UDI-DI\\s*(\\d+)";
+
+        // Compile the regex pattern
+        Pattern pattern = Pattern.compile(regex);
+
+        // Matcher for the regex pattern
+        Matcher matcher = pattern.matcher(input);
+
+        while (matcher.find()) {
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.catalog_number.add(matcher.group(1));
+            deviceInfo.lot_number.add(matcher.group(2));
+            deviceInfo.UDI.add(matcher.group(3));
+
+            objInfoList.add(deviceInfo);
+        }
+
+
+//--------------------------------------------------
+            reg1= "Product\\s*Code:\\s*\\w+";
+        reg2="UDI/?-?DI:?\\s*\\d{14}\\s*-\\s*each,\\s*\\d{14}\\s*-\\s*box,\\s*\\d{14}\\s*-\\s*case";
+        reg3="Lot\\s*Numbers?:?\\s*[\\w,\\s]+";
+
+        regPattern1 = Pattern.compile(reg1);
+        regPattern2 = Pattern.compile(reg2);
+        regPattern3 = Pattern.compile(reg3);
+
+        regMatcher1 = regPattern1.matcher(input);
+        regMatcher2 = regPattern2.matcher(input);
+        regMatcher3 = regPattern3.matcher(input);
+
+        while(  regMatcher1.find()  && regMatcher2.find() && regMatcher3.find() ){
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.product_number.add(regMatcher1.group().substring(14));
+            deviceInfo.UDI.add(regMatcher2.group().substring(7));
+            deviceInfo.lot_number.add(regMatcher3.group().substring(13));
+
+            objInfoList.add(deviceInfo);
+
+
+
+        }
+
+//--------------------------------------------------
+
+        reg1="UDI/DI\\s*\\d{14}\\s\\(cs\\),\\s*\\d{14}\\s*\\(ea\\)";
+
+        reg2="Lot\\s*Numbers?:?(\\s*[\\w,\\s]+)\\s*(REF\\s*\\d+)?";
+
+        regPattern1 = Pattern.compile(reg1);
+        regPattern2 = Pattern.compile(reg2);
+
+
+        regMatcher1 = regPattern1.matcher(input);
+        regMatcher2 = regPattern2.matcher(input);
+
+        while( regMatcher2.find() && regMatcher1.find()) {
+            OutputObj deviceInfo = new OutputObj();
+
+            deviceInfo.UDI.add(regMatcher1.group().substring(7));
+            deviceInfo.lot_number.add(regMatcher2.group(1));
+            if(regMatcher2.group(2)!=null){
+                deviceInfo.ref_number.add(regMatcher2.group(2));
+            }
+
+            objInfoList.add(deviceInfo);
+
+        }
+
+
+
+
+    }
+
+
+    public static void Baxter(String input, Set<OutputObj> objInfoList) {
+        String reg1 = "Product\\s*Code\\s*(\\d+)";
+        String reg3 = "Serial\\s*Numbers?\\s*:?\\s*([\\d\\s,]+)";
+        String reg2 = "UDI-?/?DI\\s*:?\\s*(\\d+)";
+
+        Pattern regPattern1 = Pattern.compile(reg1);
+        Pattern regPattern2 = Pattern.compile(reg2);
+        Pattern regPattern3 = Pattern.compile(reg3);
+
+        Matcher regMatcher1 = regPattern1.matcher(input);
+        Matcher regMatcher2 = regPattern2.matcher(input);
+        Matcher regMatcher3 = regPattern3.matcher(input);
+
+        while (regMatcher1.find() && regMatcher2.find() && regMatcher3.find()) {
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.product_number.add(regMatcher1.group(1));
+            deviceInfo.UDI.add(regMatcher2.group(1));
+            deviceInfo.serial_number.add(regMatcher3.group(1));
+
+            objInfoList.add(deviceInfo);
+        }
+
+
+
+        //-------------------------------------------------------------------------------------
+//
+        reg1 = "REF\\s*:?\\s*([\\w-]+)";
+        reg3 ="Serial\\s*Numbers?\\s*:?\\s*([\\w\\s,]+)";
+
+        regPattern1 = Pattern.compile(reg1);
+        regPattern2 = Pattern.compile(reg2);
+        regPattern3 = Pattern.compile(reg3);
+
+        regMatcher1 = regPattern1.matcher(input);
+        regMatcher2 = regPattern2.matcher(input);
+        regMatcher3 = regPattern3.matcher(input);
+
+        while (regMatcher1.find() && regMatcher2.find() && regMatcher3.find()) {
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.ref_number.add(regMatcher1.group(1));
+            deviceInfo.UDI.add(regMatcher2.group(1));
+            deviceInfo.serial_number.add(regMatcher3.group(1));
+
+            objInfoList.add(deviceInfo);
+        }
+
+        //-------------------------------------------------------------------------------------
+    reg1="([-\\w]+),\\s*UDI/DI\\s*(\\d+)";
+
+        regPattern1 = Pattern.compile(reg1);
+
+
+        regMatcher1 = regPattern1.matcher(input);
+
+
+        while (regMatcher1.find() ) {
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.item_number.add(regMatcher1.group(1));
+            deviceInfo.UDI.add(regMatcher1.group(2));
+
+
+            objInfoList.add(deviceInfo);
+        }
+
+        //-------------------------------------------------------------------------------------
+        reg1="P?p?roduct\\s*C?c?ode:?\\s*(\\w+),\\s*UDI/DI:?\\s*(\\d+)";
+        regPattern1 = Pattern.compile(reg1);
+
+
+        regMatcher1 = regPattern1.matcher(input);
+
+
+        while (regMatcher1.find() ) {
+            OutputObj deviceInfo = new OutputObj();
+
+            deviceInfo.UDI.add(regMatcher1.group(2));
+            deviceInfo.product_number.add(regMatcher1.group(1));
+
+
+            objInfoList.add(deviceInfo);
+        }
+        //-------------------------------------------------------------------------------------
+        reg1="([\\w-]+):\\s*UDI/DI\\s*([\\w-]+)";
+        regPattern1 = Pattern.compile(reg1);
+
+
+        regMatcher1 = regPattern1.matcher(input);
+
+
+        while (regMatcher1.find() ) {
+            OutputObj deviceInfo = new OutputObj();
+
+            deviceInfo.UDI.add(regMatcher1.group(2));
+            deviceInfo.product_number.add(regMatcher1.group(1));
+
+
+            objInfoList.add(deviceInfo);
+        }
+
+        //-------------------------------------------------------------------------------------
+        reg1="UDI/DI\\s*(\\w+),\\s*Lot\\s*Numbers?:?\\s*(\\w+)";
+        regPattern1 = Pattern.compile(reg1);
+        regPattern1 = Pattern.compile(reg1);
+
+
+        reg2="REF\\s*(\\w+)";
+        regPattern2 = Pattern.compile(reg2);
+        regMatcher1 = regPattern1.matcher(input);
+        regMatcher2 = regPattern2.matcher(input);
+
+
+        while (regMatcher1.find() && regMatcher2.find() ) {
+            OutputObj deviceInfo = new OutputObj();
+
+            deviceInfo.UDI.add(regMatcher1.group(1));
+            deviceInfo.ref_number.add(regMatcher2.group(1));
+            deviceInfo.lot_number.add(regMatcher1.group(2));
+
+
+            objInfoList.add(deviceInfo);
+        }
+
+
+
+    }
+
+
+    public static void NonLLCPhilips(String input, Set<OutputObj> objInfoList){
+
+        String reg1 ="Model\\s*No[\\s.]+(\\d+)\\s*UDI-DI\\s*([\\w/]+)";
+
+
+        Pattern regPattern1 = Pattern.compile(reg1);
+
+
+        Matcher regMatcher1 = regPattern1.matcher(input);
+
+
+
+
+        while(regMatcher1.find()){
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.model_number.add(regMatcher1.group(1));
+            deviceInfo.UDI.add(regMatcher1.group(2));
+
+            objInfoList.add(deviceInfo);
+
+
+        }
+
+
+        //----------------------------------------------------------------------------
+
+        reg1="Product\\s*Number\\s*(\\w+)";
+       String reg2="UDI-DI\\s*([-\\w]+)";
+       String reg3="Serial\\s*Numbers?\\s*([\\w\\s,]+)";
+
+
+
+         regPattern1 = Pattern.compile(reg1);
+        Pattern regPattern2 = Pattern.compile(reg2);
+        Pattern regPattern3 = Pattern.compile(reg3);
+
+         regMatcher1 = regPattern1.matcher(input);
+        Matcher regMatcher2 = regPattern2.matcher(input);
+        Matcher regMatcher3 = regPattern3.matcher(input);
+
+        while (regMatcher1.find() && regMatcher2.find() && regMatcher3.find()) {
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.product_number.add(regMatcher1.group(1));
+            deviceInfo.UDI.add(regMatcher2.group(1));
+            deviceInfo.serial_number.add(regMatcher3.group(1));
+
+            objInfoList.add(deviceInfo);
+        }        //----------------------------------------------------------------------------
+
+        reg1="Product\\s*Code\\s*(\\w+)";
+        reg2="UDI\\s*([-\\w]+)?";
+        reg3="Serial\\s*numbers\\s*([\\w\\s,]+)";
+
+
+
+         regPattern1 = Pattern.compile(reg1);
+         regPattern2 = Pattern.compile(reg2);
+         regPattern3 = Pattern.compile(reg3);
+
+         regMatcher1 = regPattern1.matcher(input);
+         regMatcher2 = regPattern2.matcher(input);
+         regMatcher3 = regPattern3.matcher(input);
+
+        while (regMatcher1.find() && regMatcher2.find() && regMatcher3.find()) {
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.product_number.add(regMatcher1.group(1));
+            if(regMatcher2.group(1)!=null){
+                deviceInfo.UDI.add(regMatcher2.group(1));
+            }
+
+            deviceInfo.serial_number.add(regMatcher3.group(1));
+
+            objInfoList.add(deviceInfo);
+        }
+
+
+        //----------------------------------
+
+        reg1="Product\\s*Number\\s*(\\w+)";
+        reg2="UDI-DI\\s*(\\w+)";
+        reg3="Serial\\s*n?N?umber\\s*(\\w+)\\s*Accessory\\s*Serial\\s*N?n?umber\\s*(\\w+)";
+
+        regPattern1 = Pattern.compile(reg1);
+        regPattern2 = Pattern.compile(reg2);
+        regPattern3 = Pattern.compile(reg3);
+
+        regMatcher1 = regPattern1.matcher(input);
+        regMatcher2 = regPattern2.matcher(input);
+        regMatcher3 = regPattern3.matcher(input);
+
+        while (regMatcher1.find() && regMatcher2.find() && regMatcher3.find()) {
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.product_number.add(regMatcher1.group(1));
+            if(regMatcher2.group(1)!=null){
+                deviceInfo.UDI.add(regMatcher2.group(1));
+            }
+
+            deviceInfo.serial_number.add(regMatcher3.group(1));
+            deviceInfo.serial_number.add(regMatcher3.group(2));
+
+            objInfoList.add(deviceInfo);
+        }
+        //----------------------------------
+
+        reg1="Model\\s*Number\\s*(\\w+)";
+        reg2="UDI-DI:?\\s*(\\w+)";
+        reg3="Lot\\s*Code:?\\s*(\\w+)";
+
+        regPattern1 = Pattern.compile(reg1);
+        regPattern2 = Pattern.compile(reg2);
+        regPattern3 = Pattern.compile(reg3);
+
+        regMatcher1 = regPattern1.matcher(input);
+        regMatcher2 = regPattern2.matcher(input);
+        regMatcher3 = regPattern3.matcher(input);
+
+        while (regMatcher1.find() && regMatcher2.find() && regMatcher3.find()) {
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.product_number.add(regMatcher1.group(1));
+            if(regMatcher2.group(1)!=null){
+                deviceInfo.UDI.add(regMatcher2.group(1));
+            }
+
+            deviceInfo.lot_number.add(regMatcher3.group(1));
+
+
+            objInfoList.add(deviceInfo);
+        }      //----------------------------------
+
+        reg1="Model\\s*No\\.\\s*(\\w+)";
+        reg2="UDI-DI:?\\s*(\\(\\d\\))?\\s*(\\w+)";
+
+
+        regPattern1 = Pattern.compile(reg1);
+        regPattern2 = Pattern.compile(reg2);
+
+
+        regMatcher1 = regPattern1.matcher(input);
+        regMatcher2 = regPattern2.matcher(input);
+
+
+        while (regMatcher1.find() && regMatcher2.find()) {
+            OutputObj deviceInfo = new OutputObj();
+            deviceInfo.product_number.add(regMatcher1.group(1));
+            if(regMatcher2.group(2)!=null){
+                deviceInfo.UDI.add(regMatcher2.group(2));
+            }
+
+
+            objInfoList.add(deviceInfo);
+        }
+
+    }
+
+
+
+
+
     public static Set<OutputObj> extractDeviceInfo(String input,String firmname) {
         Set<OutputObj> objInfoList = new HashSet<>();
         if(Objects.equals(firmname, "Exactech, Inc.")) {
@@ -290,126 +1049,25 @@ public class DeviceInfoExtractor {
         else if (Objects.equals(firmname, "MEDLINE INDUSTRIES, LP - Northfield")){
             DeviceInfoExtractor.Medline(input,objInfoList);
         }
+        else if(Objects.equals(firmname, "Boston Scientific Corporation")){
+            DeviceInfoExtractor.Boston(input,objInfoList);
+        }
+        else if(Objects.equals(firmname, "Cardinal Health 200, LLC")){
+            DeviceInfoExtractor.Cardinal(input,objInfoList);
+        }
+        else if (Objects.equals(firmname, "Baxter Healthcare Corporation")){
+            DeviceInfoExtractor.Baxter(input,objInfoList);
+        }
+        else if(Objects.equals(firmname, "Philips North America")){
+            DeviceInfoExtractor.NonLLCPhilips(input,objInfoList);
+
+        }
         return objInfoList;
 
 
 
 
     }
-//
-//        List<OutputObj> objInfoList = new ArrayList<>();
-//        // Regular expression patterns
-//        String itemPattern = "(\\d{3}-\\d{2}-\\d{2})";
-//        String udiPattern = "UDI/DI\\s([\\d]+)";
-//        String serialPattern = "Serial Numbers:\\s([\\d,\\s]+)";
-//        String catPattern = "Catalog Numbers:\\s(((\\d+)-)+)\\d";
-//        String gtinPattern = "GTIN\\s([\\d]+)";
-//
-//        Pattern itemNumPattern = Pattern.compile(itemPattern);
-//        Pattern udiNumPattern = Pattern.compile(udiPattern);
-//        Pattern serialNumPattern = Pattern.compile(serialPattern);
-//        Pattern catNumPattern = Pattern.compile(catPattern);
-//        Pattern gtinNumPattern = Pattern.compile(catPattern);
-//
-//
-//        // Finding all matches
-//        Matcher itemNumMatcher = itemNumPattern.matcher(input);
-//        Matcher udiNumMatcher = udiNumPattern.matcher(input);
-//        Matcher serialNumMatcher = serialNumPattern.matcher(input);
-//        Matcher catNumMatcher = catNumPattern.matcher(input);
-//        Matcher gtinNumMatcher = catNumPattern.matcher(input);
-//
-//        String regex = "\\b(\\w{2}-\\w{3}-\\w{2}-\\d{4,5}), GTIN (\\d{14}), Serial Numbers: ([\\w, ]+);?";
-//        String regex2 = "(\\d{3}-\\d{2}-\\d{2}), GTIN (\\d{14}), Serial Numbers: ([\\w, ]+);?";
-//        Pattern re = Pattern.compile(regex);
-//        Pattern re2 = Pattern.compile(regex2);
-//
-//        Matcher rema= re.matcher(input);
-//        Matcher rema2= re2.matcher(input);
-//
-//       while (rema.find()){
-//           OutputObj deviceInfo = new OutputObj();
-//           deviceInfo.catalog_number.add(rema.group(1));
-//           deviceInfo.GTIN.add(rema.group(2));
-//
-//
-//           String[] serials = rema.group(3).split(",\\s*");
-//           deviceInfo.serial_number.addAll(Arrays.asList(serials));
-//
-//
-//
-//           objInfoList.add(deviceInfo);
-//
-//       }
-//
-//        while (rema2.find()){
-//            OutputObj deviceInfo = new OutputObj();
-//            deviceInfo.catalog_number.add(rema2.group(1));
-//            deviceInfo.GTIN.add(rema2.group(2));
-//            String[] serials = rema2.group(3).split(",\\s*");
-//            deviceInfo.serial_number.addAll(Arrays.asList(serials));
-//            objInfoList.add(deviceInfo);
-//
-//        }
-//
-//        while ((itemNumMatcher.find()) && udiNumMatcher.find() && serialNumMatcher.find()) {
-//            OutputObj deviceInfo = new OutputObj();
-//            deviceInfo.item_number.add(itemNumMatcher.group(1));
-//            deviceInfo.UDI.add(udiNumMatcher.group(1));
-//
-//
-//            String[] serials = serialNumMatcher.group(1).split(",\\s*");
-//            for (String serial : serials) {
-//                deviceInfo.serial_number.add(serial);
-//            }
-//
-//
-//
-//            objInfoList.add(deviceInfo);
-//        }
 
-        // From Firm : Fresenius Medical Care Holdings, Inc.
-//         regex = "Product Code:\\s*(\\w+)|UDI-DI:\\s*([\\d+]+(?: \\(\\+ serial number\\))?)|Serial Numbers:\\s*([\\w\\d]+(?:\\s*to\\s*[\\w\\d]+)?)";
-//        // Compile the regex
-//        Pattern pattern = Pattern.compile(regex);
-//        Matcher matcher = pattern.matcher(input);
-//
-//        // Initialize variables to hold extracted values
-//        String productCode = null;
-//        String udiDi = null;
-//        String serialNumbers = null;
-//
-//        // Find and extract values
-//        while (matcher.find()) {
-//            OutputObj deviceInfo = new OutputObj();
-//            if (matcher.group(1) != null) {
-//                deviceInfo.product_number.add(matcher.group(1));
-//            }
-//            if (matcher.group(2) != null) {
-//                deviceInfo.UDI.add(matcher.group(2));
-//            }
-//            if (matcher.group(3) != null) {
-//                deviceInfo.serial_number.add(matcher.group(3));
-//            }
-//
-//            objInfoList.add(deviceInfo);
-//        }
-//
-//        return objInfoList;
-//    }
-
-//    public static void main(String[] args) {
-//        String input = "a) Item Number 314-02-32, UDI/DI 10885862175052, Serial Numbers: 2090670, 1984370, 2086996, 2090655, 2108671, 2086997, 2086999, 2379424, 2479807, 2640374, 2142682, 2147846, 2142679, 2479798, 2090659, 2147857, 2147847, 2640379, 2090665, 2086983, 2640371, 2142675, 2147834, 2086981, 2640406, 2086998, 1984369, 2147853, 2640397, 1984379, 2628334, 2640377, 2640375, 2640384, 2752430, 3570463, 3570474, 2640372, 2142674, 1984378, 2379426, 2640380, 2640391, 2640394, 2640395, 2640403, 2640410, 2379418, 2594876, 2640385, 3616755, 3616759, 3758373, 3616754, 3570473, 2983574, 3570462, 3570461, 3570454, 1984381, 2086989, 2147814, 2086988, 2147828, 2640408, 2594877, 2958057, 3970792, 2788748, 3970793, 2752423, 3970794, 4469187, 3616757, 4587423, 2379417, 2594878, 2788750, 2752418, 3570460, 4469183, 2958061, 3570459, 4591595, 4657525, 4657526, 4807291, 4657530, 2752421, 4469189, 4209410, 3570469, 3616758, 4602056, 5349352, 4591598, 5161352, 4485953, 4141933, 4409893, 4469185, 4520246, 5540785, 5540764, 5279160, 5540774, 5540781, 5540777, 5540773, 5929633, 5929646, 4497764, 4807288, 5519031, 5161362, 5161370, 5929643, 5929635, 5929624, 4409904, 5349329, 5349336, 5349327, 6846318, 6130751, 6130754, 6130763, 6846297, 6846301, 6846314, 6823520, 4651619, 6823534, 5929622, 7008973, 7008965, 5540789, 5929640; b) Item Number 314-02-33, UDI/DI 10885862175069, Serial Numbers: 2084927, 1985029, 2084773, 2141202, 1985036, 1985027, 2084781, 2084788, 2084783, 1985020, 2084904, 2084930, 1985024, 1985031, 2084771";
-//
-//        List<Map<String, Object>> deviceInfoList = extractDeviceInfo(input);
-//
-//        // Print the extracted device information
-//        for (Map<String, Object> deviceInfo : deviceInfoList) {
-//            System.out.println("Item Number: " + deviceInfo.get("Item Number"));
-//            System.out.println("UDI/DI: " + deviceInfo.get("UDI/DI"));
-//            System.out.println("Serial Numbers: " + deviceInfo.get("Serial Numbers"));
-//            System.out.println();
-//        }
-//    }
 }
 
