@@ -16,7 +16,7 @@ public class Main {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             // Parse JSON file
-            RecallData recallData = objectMapper.readValue(new File("/Users/ddhpatel/Desktop/FilteredResults2023.json"), RecallData.class);
+            RecallData recallData = objectMapper.readValue(new File("/Users/ddhpatel/Desktop/2324.json"), RecallData.class);
 
             // Get the list of recall results
             List<RecallResult> recalls = recallData.results;
@@ -44,7 +44,7 @@ public class Main {
                         if(Objects.equals(r.recalling_firm, "Philips North America")){
 
                         }
-                        Set<OutputObj> deviceInfoList = extractDeviceInfo(r.product_description + " " + r.code_info,r.recalling_firm);
+                        Set<OutputObj> deviceInfoList = extractDeviceInfo(r.product_description + " " + r.code_info,r.recalling_firm,r.recall_number);
                         for (OutputObj deviceInfo : deviceInfoList) {
                             writer.write(deviceInfo.toString());
                             writer.write("\n");  // New line after each device info
