@@ -14,13 +14,13 @@ public class Main {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             // Parse JSON file
-            RecallData recallData = objectMapper.readValue(new File("/Users/ddhpatel/Desktop/FilteredResults2023.json"), RecallData.class);
+            RecallData recallData = objectMapper.readValue(new File("/Users/ddhpatel/Desktop/2324.json"), RecallData.class);
 
             // Get the list of recall results
             List<RecallResult> recalls = recallData.results;
 
             // Array of firm names to filter by
-            String[] firmNames = {"MEDLINE INDUSTRIES, LP - Northfield","Exactech, Inc.","Fresenius Medical Care Holdings, Inc.","Boston Scientific Corporation","Cardinal Health 200, LLC","Baxter Healthcare Corporation","Philips North America"};
+            String[] firmNames = {"MEDLINE INDUSTRIES, LP - Northfield","Howmedica Osteonics Corp.","Becton Dickinson & Co.","Angiodynamics, Inc.","Universal Meditech Inc.,Aizu Olympus Co., Ltd.","Zimmer, Inc.","Philips North America Llc","Integra LifeSciences Corp.","Medtronic Inc., Cardiac Rhythm and Heart Failure (CRHF)","Hobbs Medical, Inc.","ROi CPS LLC","C.R. Bard Inc","Stryker Corporation","American Contract Systems, Inc.","Biomerieux Inc","Linkbio Corp.","Stradis Medical, LLC dba Stradis Healthcare"};
 
             // Set to hold unique filtered results
             Set<RecallResult> uniqueFilteredRecalls = new HashSet<>();
@@ -39,7 +39,9 @@ public class Main {
                     int i = 1;
                     for (RecallResult r : uniqueFilteredRecalls) {
                         writer.write("\nObject Number: " + i + "\n");
+                        if(Objects.equals(r.recalling_firm, "Philips North America")){
 
+                        }
                         Set<OutputObj> deviceInfoList = extractDeviceInfo(r.product_description + " " + r.code_info,r.recalling_firm,r.recall_number);
                         for (OutputObj deviceInfo : deviceInfoList) {
                             writer.write(deviceInfo.toString());
@@ -93,7 +95,7 @@ public class Main {
                 .toList();
     }
 
-        public static List<RecallResult> filterByFirmName(List<RecallResult> recalls, String firmName) {
+    public static List<RecallResult> filterByFirmName(List<RecallResult> recalls, String firmName) {
         return recalls.stream()
                 .filter(recall -> firmName.equals(recall.recalling_firm))
                 .toList();

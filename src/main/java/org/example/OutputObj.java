@@ -1,8 +1,6 @@
 package org.example;
-
 import java.util.ArrayList;
 import java.util.List;
-
 public class OutputObj {
     public String recall_number;
     public String recalling_firm;
@@ -21,8 +19,6 @@ public class OutputObj {
     public ArrayList<String> kit_number = new ArrayList<>();
     public ArrayList<String> ref_number = new ArrayList<>();
     public ArrayList<String> reorder_number = new ArrayList<>();
-
-
     @Override
     public String toString() {
         return "{\n" +
@@ -44,8 +40,5 @@ public class OutputObj {
                 "\"ref_number\" : \"" + ref_number + '\"' + ",\n" +
                 "\"reorder_number\" : \"" + reorder_number + '\"' + ",\n" +
                 '}';
-
-
     }
-
 }
