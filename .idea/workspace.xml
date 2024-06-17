@@ -4,10 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0c74e03f-6146-4ee0-8418-5a26773a94da" name="Changes" comment="error debugging">
+    <list default="true" id="0c74e03f-6146-4ee0-8418-5a26773a94da" name="Changes" comment="3rd commit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Baxter Healthcare Corporation.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Baxter Healthcare Corporation.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Boston Scientific Corporation.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Boston Scientific Corporation.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cardinal Health 200, LLC.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Cardinal Health 200, LLC.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Exactech, Inc..txt" beforeDir="false" afterPath="$PROJECT_DIR$/Exactech, Inc..txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Fresenius Medical Care Holdings, Inc..txt" beforeDir="false" afterPath="$PROJECT_DIR$/Fresenius Medical Care Holdings, Inc..txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MEDLINE INDUSTRIES, LP - Northfield.txt" beforeDir="false" afterPath="$PROJECT_DIR$/MEDLINE INDUSTRIES, LP - Northfield.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Philips North America.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Philips North America.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/DeviceInfoExtractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/DeviceInfoExtractor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,13 +129,30 @@
       <option name="project" value="LOCAL" />
       <updated>1718359610897</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="error debugging">
+      <option name="closed" value="true" />
+      <created>1718523698860</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1718523698860</updated>
+    </task>
+    <task id="LOCAL-00006" summary="3rd commit">
+      <option name="closed" value="true" />
+      <created>1718523731176</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1718523731176</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="2nd firm done name: Fresenius Medical Care Holdings, Inc." />
     <MESSAGE value="new output file for each firm" />
     <MESSAGE value="error debugging" />
-    <option name="LAST_COMMIT_MESSAGE" value="error debugging" />
+    <MESSAGE value="3rd commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="3rd commit" />
   </component>
 </project>

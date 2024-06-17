@@ -1002,9 +1002,9 @@ public class DeviceInfoExtractor {
     }
 
     public static void Baxter(String input, Set<OutputObj> objInfoList,String recall) {
-        String reg1 = "Product\\s*Code\\s*(\\d+)";
-        String reg3 = "Serial\\s*Numbers?\\s*:?\\s*([\\d\\s,]+)";
-        String reg2 = "UDI-?/?DI\\s*:?\\s*(\\d+)";
+        String reg1 = "Product\\s*Code:?-?\\s*([-\\w]+)";
+        String reg3 = "Serial\\s*Numbers?\\s*:?\\s*([\\w\\s,]+)";
+        String reg2 = "UDI-?/?(DI)?\\s*:?\\s*(\\w+)";
 
         Pattern regPattern1 = Pattern.compile(reg1);
         Pattern regPattern2 = Pattern.compile(reg2);
@@ -1019,6 +1019,7 @@ public class DeviceInfoExtractor {
             deviceInfo.product_number.add(regMatcher1.group(1));
             deviceInfo.UDI.add(regMatcher2.group(1));
             deviceInfo.serial_number.add(regMatcher3.group(1));
+
 
             objInfoList.add(deviceInfo);
         }
@@ -1048,7 +1049,7 @@ public class DeviceInfoExtractor {
         }
 
         //-------------------------------------------------------------------------------------
-        reg1="([-\\w]+),\\s*UDI/DI\\s*(\\d+)";
+        reg1="\\)\\s*([-\\w]+),\\s*UDI/DI\\s*(\\d+)";
 
         regPattern1 = Pattern.compile(reg1);
 
@@ -1067,17 +1068,20 @@ public class DeviceInfoExtractor {
 
         //-------------------------------------------------------------------------------------
         reg1="P?p?roduct\\s*C?c?ode:?\\s*(\\w+),\\s*UDI/DI:?\\s*(\\d+)";
+
         regPattern1 = Pattern.compile(reg1);
 
 
         regMatcher1 = regPattern1.matcher(input);
 
 
-        while (regMatcher1.find() ) {
+        while (regMatcher1.find() && regMatcher2.find() ) {
             OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
 
             deviceInfo.UDI.add(regMatcher1.group(2));
             deviceInfo.product_number.add(regMatcher1.group(1));
+            deviceInfo.serial_number.add("All serial numbers");
+
 
 
             objInfoList.add(deviceInfo);
@@ -1101,12 +1105,12 @@ public class DeviceInfoExtractor {
         }
 
         //-------------------------------------------------------------------------------------
-        reg1="UDI/DI\\s*(\\w+),\\s*Lot\\s*Numbers?:?\\s*(\\w+)";
+        reg1="UDI/DI\\s*(\\w+),\\s*Lot\\s*Numbers?:?\\s*([-\\w]+)";
         regPattern1 = Pattern.compile(reg1);
         regPattern1 = Pattern.compile(reg1);
 
 
-        reg2="REF\\s*(\\w+)";
+        reg2="REF\\s*([-\\w]+)";
         regPattern2 = Pattern.compile(reg2);
         regMatcher1 = regPattern1.matcher(input);
         regMatcher2 = regPattern2.matcher(input);
@@ -1118,6 +1122,28 @@ public class DeviceInfoExtractor {
             deviceInfo.UDI.add(regMatcher1.group(1));
             deviceInfo.ref_number.add(regMatcher2.group(1));
             deviceInfo.lot_number.add(regMatcher1.group(2));
+
+
+            objInfoList.add(deviceInfo);
+        }
+
+        //-------------------------------------------------------------------------------------
+        reg1="Product\\s*C?c?ode:?\\s*([\\w-]+)";
+        regPattern1 = Pattern.compile(reg1);
+
+
+
+        reg2="Lot\\s*n?N?umbers?:?\\s*([\\w,\\s]+)";
+        regPattern2 = Pattern.compile(reg2);
+        regMatcher1 = regPattern1.matcher(input);
+        regMatcher2 = regPattern2.matcher(input);
+
+
+        while (regMatcher1.find() && regMatcher2.find() ) {
+            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
+
+            deviceInfo.product_number.add(regMatcher1.group(1));
+            deviceInfo.lot_number.add(regMatcher2.group(1));
 
 
             objInfoList.add(deviceInfo);
@@ -1301,7 +1327,6 @@ public class DeviceInfoExtractor {
             DeviceInfoExtractor.Baxter(input, objInfoList, recall);
         } else if (Objects.equals(firmname, "Philips North America")) {
             DeviceInfoExtractor.NonLLCPhilips(input, objInfoList, recall);
-
         }
         return objInfoList;
 
