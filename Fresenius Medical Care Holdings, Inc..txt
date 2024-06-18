@@ -1,5 +1,0 @@
-Total number of objects identified: 2
-
-Object Number: 1
-
-Object Number: 2
