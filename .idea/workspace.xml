@@ -4,23 +4,35 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0c74e03f-6146-4ee0-8418-5a26773a94da" name="Changes" comment="code till midterm eval">
-      <change afterPath="$PROJECT_DIR$/src/main/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="0c74e03f-6146-4ee0-8418-5a26773a94da" name="Changes" comment="code cleaned">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/Userside.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Aizu Olympus Co., Ltd..txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/American Contract Systems, Inc..txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Angiodynamics, Inc..txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Baxter Healthcare Corporation.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Becton Dickinson &amp; Co..txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Biomerieux Inc.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Boston Scientific Corporation.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/C.R. Bard Inc.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Cardinal Health 200, LLC.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Exactech, Inc..txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Fresenius Medical Care Holdings, Inc..txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hobbs Medical, Inc..txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Howmedica Osteonics Corp..txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Integra LifeSciences Corp..txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Linkbio Corp..txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/MEDLINE INDUSTRIES, LP - Northfield.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Medtronic Inc., Cardiac Rhythm and Heart Failure (CRHF).txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Philips North America Llc.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Philips North America.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/device_info.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ROi CPS LLC.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Stradis Medical, LLC dba Stradis Healthcare.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Stryker Corporation.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Universal Meditech Inc..txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Zimmer, Inc..txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/DeviceInfoExtractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/DeviceInfoExtractor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +75,7 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "Application.Main.executor": "Run",
+    "Application.Userside.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "final-midterm",
@@ -158,7 +171,23 @@
       <option name="project" value="LOCAL" />
       <updated>1718599976874</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="code cleaned">
+      <option name="closed" value="true" />
+      <created>1718710073406</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1718710073406</updated>
+    </task>
+    <task id="LOCAL-00009" summary="code cleaned">
+      <option name="closed" value="true" />
+      <created>1718710103736</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1718710103736</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -167,6 +196,7 @@
     <MESSAGE value="error debugging" />
     <MESSAGE value="3rd commit" />
     <MESSAGE value="code till midterm eval" />
-    <option name="LAST_COMMIT_MESSAGE" value="code till midterm eval" />
+    <MESSAGE value="code cleaned" />
+    <option name="LAST_COMMIT_MESSAGE" value="code cleaned" />
   </component>
 </project>

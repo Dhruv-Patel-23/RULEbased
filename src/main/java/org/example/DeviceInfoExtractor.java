@@ -33,9 +33,6 @@ public class DeviceInfoExtractor {
 
             String[] serials = mat3.group(1).split(",\\s*");
             deviceInfo.serial_number.addAll(Arrays.asList(serials));
-
-
-
             objInfoList.add(deviceInfo);
             done=true;
         }
@@ -1257,7 +1254,7 @@ public class DeviceInfoExtractor {
 
         //----------------------------------------------------------------------------
     if(done){return;}
-        reg1="Product\\s*Number:?\\s*(\\w+)";
+        reg1="Product\\s*Number:?\\s*(\\d+)";
         String reg2="UDI-?/?DI\\s*:?\\s*([-\\w]+)";
         String reg3="Serial\\s*Numbers?:?\\s*([\\w\\s,]+)";
 
