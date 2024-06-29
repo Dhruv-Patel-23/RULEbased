@@ -5,1076 +5,264 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.*;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.File;
+
+import java.io.IOException;
+
 public class DeviceInfoExtractor {
 
-    public static void Exatech(String input, Set<OutputObj> objInfoList,String recall){
+public static void ExtractData(String input, Set<OutputObj> objInfoList,String recall,String name) throws IOException {
 
-        boolean done=false;
-
-        // Regular expression patterns
-        String reg1 = "(\\d{3}-\\d{2}-\\d{2})";
-        String reg2 = "UDI/?-?DI\\s*:?\\s*(\\w+)";
-        String reg3 = "Serial\\s*Numbers?:?\\s*([\\d,\\s]+)";
-
-        Pattern pat1 = Pattern.compile(reg1);
-        Pattern pat2 = Pattern.compile(reg2);
-        Pattern pat3 = Pattern.compile(reg3);
-
-
-        Matcher mat1 = pat1.matcher(input);
-        Matcher mat2 = pat2.matcher(input);
-        Matcher mat3 = pat3.matcher(input);
-
-        while ((mat1.find()) && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.item_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat2.group(1));
-
-
-            String[] serials = mat3.group(1).split(",\\s*");
-            deviceInfo.serial_number.addAll(Arrays.asList(serials));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-
-        if(done){
-            return;
-        }
-
-        reg1 = "(\\w-)+\\w";
-        reg2="GTIN\\s*(\\w+)";
-        reg3="Serial\\s*Numbers?:?\\s*([\\w,\\s]+)";
-
-        pat1 = Pattern.compile(reg1);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-        while ((mat1.find()) && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.catalog_number.add(mat1.group());
-            deviceInfo.GTIN.add(mat2.group(1));
-            String[] serials = mat3.group(1).split(",\\s*");
-            deviceInfo.serial_number.addAll(Arrays.asList(serials));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
+    ObjectMapper objectMapper = new ObjectMapper();
+    String jsonFileName="/Users/ddhpatel/Desktop/RULEbased/src/main/res/"+name;
+    if(name.endsWith(".")){
+        jsonFileName=jsonFileName+"json";
     }
-
-    public static  void Fresenius(String input, Set<OutputObj> objInfoList,String recall) {
-        boolean done=false;
-        String reg1 = "Product\\s*Code:?\\s*(\\w+)";
-        String reg2 = "UDI/?-?DI\\s*:?\\s*(\\w+)";
-        String reg3 = "Serial\\s*Numbers?:?\\s*([\\w,\\s]+to\\s*\\w+)";
-
-        Pattern pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        Pattern pat2 = Pattern.compile(reg2);
-        Pattern pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        Matcher mat1 = pat1.matcher(input);
-        Matcher mat2 = pat2.matcher(input);
-        Matcher mat3 = pat3.matcher(input);
-
-        while ((mat1.find()) && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.product_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat2.group(1));
-            deviceInfo.serial_number.add(mat3.group(1));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-
-
-        if(done){
-            return;
-        }
-        reg1="Model\\s*([Numberso.]+)?\\s*:?\\s*([\\w-]+)";
-        reg2="UDI/?-?DI:?\\s*(\\w+)";
-        reg3="Serial\\s*([Numberso.]+)?:?\\s*([\\w\\s,]+)";
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-        while ((mat1.find()) && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.model_number.add(mat1.group(2));
-            deviceInfo.UDI.add(mat2.group(1));
-
-            String[] serials = mat3.group(2).split(",");
-            deviceInfo.serial_number.addAll(Arrays.asList(serials));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-        if(done){
-            return;
-        }
-
-        reg1="Model\\s*([Numberso.]+)?\\s*:?\\s*([\\w-]+)";
-        reg2="UDI-?/?DI\\s*\\(\\w+\\):\\s*(\\w+).\\s*UDI-?/?DI\\s*\\(\\w+\\):\\s*(\\w+)";
-        reg3="All lots";
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-
-        while ((mat1.find()) && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.model_number.add(mat1.group(2));
-            deviceInfo.UDI.add(mat2.group(1));deviceInfo.UDI.add(mat2.group(2));
-
-            deviceInfo.lot_number.add(mat3.group());
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
+    else{
+        jsonFileName=jsonFileName+".json";
     }
-
-    public static void Medline(String input, Set<OutputObj> objInfoList,String recall){
-
-
-
-        boolean done=false;
-        String reg1 = "REF\\s*(\\w+)";
-
-        String reg2 = "UDI/?-?DI\\s*:?\\s*(\\w+)\\s*\\(\\w+\\),?\\s*(\\w+)\\s*\\(\\w+\\)";
-        String reg3 = "Lot\\s*(Numbers?)?(codes?)?:?\\s*([\\w,\\s]+)";
-
-        Pattern pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        Pattern pat2 = Pattern.compile(reg2);
-        Pattern pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
+    JsonNode rootNode = objectMapper.readTree(new File(jsonFileName));
+    JsonNode patterns = rootNode.get("patterns");
 
 
-        Matcher mat1 = pat1.matcher(input);
-        Matcher mat2 = pat2.matcher(input);
-        Matcher mat3 = pat3.matcher(input);
+    for (JsonNode patternNode : patterns) {
+        String udiIdx = patternNode.get("multvaludi").asText();
+        List<Integer> udiIdxList = grpIdx(udiIdx);
 
-        while ((mat1.find()) && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.ref_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat2.group(1));
-            deviceInfo.UDI.add(mat2.group(2));
-            deviceInfo.lot_number.add(mat3.group(3));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
+        String gtinIdx = patternNode.get("multvalgtin").asText();
+        List<Integer> gtinIdxList = grpIdx(gtinIdx);
 
-        //--------------------------------------------------------------------------------------------
-        if(done){
-            return;
-        }
-         reg1 = "REF\\s*(\\w+)";
-         reg2 = "UDI/?-?DI\\s*:?\\s*(\\w+)";
-         reg3 = "Lot\\s*(Numbers?)?(codes?)?:?\\s*([\\w,\\s]+)";
+        String modelIdx = patternNode.get("modelidx").asText();
+        List<Integer> modelIdxList = grpIdx(modelIdx);
 
-         pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-         pat2 = Pattern.compile(reg2);
-         pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
+        String catalogIdx = patternNode.get("catalogidx").asText();
+        List<Integer> catalogIdxList = grpIdx(catalogIdx);
 
+        String refIdx = patternNode.get("refidx").asText();
+        List<Integer> refIdxList = grpIdx(refIdx);
 
-         mat1 = pat1.matcher(input);
-         mat2 = pat2.matcher(input);
-         mat3 = pat3.matcher(input);
+        String reorderIdx = patternNode.get("reorderidx").asText();
+        List<Integer> reorderIdxList = grpIdx(reorderIdx);
 
-        while ((mat1.find()) && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.ref_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat2.group(1));
+        String productIdx = patternNode.get("productidx").asText();
+        List<Integer> productIdxList = grpIdx(productIdx);
 
-            deviceInfo.lot_number.add(mat3.group(3));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
+        String itemIdx = patternNode.get("itemidx").asText();
+        List<Integer> itemIdxList = grpIdx(itemIdx);
 
-//
-//        // Regular expression to capture REF number, UDI/DI, and Lot Numbers
-//        String refRegex = "REF\\s*(\\w+)";
-//        String udiregex = "UDI/DI:?\\s*(\\w+)";
-//
-//        String lotRegex = "Lot\\s*(Numbers)?(code)?:?\\s*([\\w,\\s]+)";
-//
-//        // Compile the regex
-//        Pattern refPattern = Pattern.compile(refRegex);
-//        Matcher refMatcher = refPattern.matcher(input);
-//
-//        Pattern udiPattern = Pattern.compile(udiregex);
-//        Matcher udiMatcher = udiPattern.matcher(input);
-//
-//
-//        Pattern lot = Pattern.compile(lotRegex);
-//        Matcher lotMatcher = lot.matcher(input);
-//
-//        while ((refMatcher.find()) && udiMatcher.find() && lotMatcher.find()) {
-//
-//            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-//            deviceInfo.ref_number.add(refMatcher.group(1));
-//            deviceInfo.UDI.add(udiMatcher.group(1));
-//            deviceInfo.lot_number.add(lotMatcher.group(3));
-//
-//
-//
-//
-//            objInfoList.add(deviceInfo);
-//        }
-        //----------------------------------------------------------------------------------------
+        String batchIdx = patternNode.get("batchidx").asText();
+        List<Integer> batchIdxList = grpIdx(batchIdx);
 
-       if(done){
-           return;
-       }
-       reg1 = "REF\\s*(\\w+)";
-       reg2 = "GTIN\\s*:?\\s*(\\w+)";
-       reg3 = "Lot\\s*(Numbers?)?(codes?)?:?\\s*([\\w,\\s]+)";
+        String lotIdx = patternNode.get("lotidx").asText();
+        List<Integer> lotIdxList = grpIdx(lotIdx);
 
-         pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-         pat2 = Pattern.compile(reg2);
-         pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
+        String serialIdx = patternNode.get("serialidx").asText();
+        List<Integer> serialIdxList = grpIdx(serialIdx);
 
+        String partIdx = patternNode.get("partidx").asText();
+        List<Integer> partIdxList = grpIdx(partIdx);
 
-         mat1 = pat1.matcher(input);
-         mat2 = pat2.matcher(input);
-         mat3 = pat3.matcher(input);
+        String upnIdx = patternNode.get("upnidx").asText();
+        List<Integer> upnIdxList = grpIdx(upnIdx);
 
-        while ((mat1.find()) && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.ref_number.add(mat1.group(1));
-            deviceInfo.GTIN.add(mat2.group(1));
-            deviceInfo.lot_number.add(mat3.group(3));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
+        String upcIdx = patternNode.get("upcidx").asText();
+        List<Integer> upcIdxList = grpIdx(upcIdx);
 
+        String kitIdx = patternNode.get("kitidx").asText();
+        List<Integer> kitIdxList = grpIdx(kitIdx);
 
+        String model = patternNode.get("model").asText();
+        String udi = patternNode.get("udi").asText();
+        String serial = patternNode.get("serial").asText();
+        String gtin = patternNode.get("gtin").asText();
+        String batch = patternNode.get("batch").asText();
+        String lot = patternNode.get("lot").asText();
+        String product = patternNode.get("product").asText();
+        String part = patternNode.get("part").asText();
+        String upn = patternNode.get("upn").asText();
+        String upc = patternNode.get("upc").asText();
+        String kit = patternNode.get("kit").asText();
+        String item = patternNode.get("item").asText();
+        String catalog = patternNode.get("catalog").asText();
+        String ref = patternNode.get("ref").asText();
+        String reorder = patternNode.get("reorder").asText();
 
+        Pattern modelPat = Pattern.compile(model, Pattern.CASE_INSENSITIVE);
+        Pattern udiPat = Pattern.compile(udi, Pattern.CASE_INSENSITIVE);
+        Pattern serialPat = Pattern.compile(serial, Pattern.CASE_INSENSITIVE);
+        Pattern gtinPat = Pattern.compile(gtin, Pattern.CASE_INSENSITIVE);
+        Pattern batchPat = Pattern.compile(batch, Pattern.CASE_INSENSITIVE);
+        Pattern lotPat = Pattern.compile(lot, Pattern.CASE_INSENSITIVE);
+        Pattern productPat = Pattern.compile(product, Pattern.CASE_INSENSITIVE);
+        Pattern partPat = Pattern.compile(part, Pattern.CASE_INSENSITIVE);
+        Pattern upnPat = Pattern.compile(upn, Pattern.CASE_INSENSITIVE);
+        Pattern upcPat = Pattern.compile(upc, Pattern.CASE_INSENSITIVE);
+        Pattern kitPat = Pattern.compile(kit, Pattern.CASE_INSENSITIVE);
+        Pattern refPat = Pattern.compile(ref, Pattern.CASE_INSENSITIVE);
+        Pattern reorderPat = Pattern.compile(reorder, Pattern.CASE_INSENSITIVE);
+        Pattern catalogPat = Pattern.compile(catalog, Pattern.CASE_INSENSITIVE);
+        Pattern itemPat = Pattern.compile(item, Pattern.CASE_INSENSITIVE);
 
-//
-//
-//        refRegex = "REF\\s*(\\w+)";
-//        udiregex = "GTIN:?\\s*(\\w+)";
-//        lotRegex = "Lot\\s*Numbers:?\\s*([\\w,\\s]+)";
-//
-//        // Compile the regex
-//        refPattern = Pattern.compile(refRegex);
-//        refMatcher = refPattern.matcher(input);
-//
-//        udiPattern = Pattern.compile(udiregex);
-//        udiMatcher = udiPattern.matcher(input);
-//
-//
-//        lot = Pattern.compile(lotRegex);
-//        lotMatcher = lot.matcher(input);
-//
-//        while ((refMatcher.find()) && udiMatcher.find() && lotMatcher.find()) {
-//
-//            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-//            deviceInfo.ref_number.add(refMatcher.group(1));
-//            deviceInfo.GTIN.add(udiMatcher.group(1));
-//            deviceInfo.lot_number.add(lotMatcher.group(1));
-//
-//
-//
-//
-//            objInfoList.add(deviceInfo);
-//        }
-        //----------------------------------------------------------------------------------------
-
-
-        if(done){
-            return;
-        }
-        reg1 = "Reorder\\s*Numbers?\\s*(\\w+)";
-        reg2 = "UDI/?-?DI:?\\s*(\\w+)[\\s()\\w]*.?\\s*(\\w+)[\\s()\\w]*";
-        reg3 = "Lot\\s*(Numbers?)?(codes?)?:?\\s*([\\w,\\s]+)";
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-        while ((mat1.find()) && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.reorder_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat2.group(1));
-            deviceInfo.UDI.add(mat2.group(2));
-            deviceInfo.lot_number.add(mat3.group(3));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-
-        if(done){
-            return;
-        }
-        reg1 = "Product\\sCode:?\\s(\\w+)";
-        reg2 = "UDI/?-?DI:?\\s*(\\w+)\\s*\\(\\w*\\)\\s*,?\\s*(\\w+)\\s*\\(\\w*\\)";
-        reg3 = "Lot\\s*(Numbers?)?(codes?)?:?\\s*([\\w,\\s]+)";
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-        while ((mat1.find()) && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.product_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat2.group(1));
-            deviceInfo.UDI.add(mat2.group(2));
-            deviceInfo.lot_number.add(mat3.group(3));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-
-
-
-
-//        String prodregex = "Product\\sCode\\s[0-9A-Za-z]+";
-//        udiregex = "UDI/DI\\s\\d{14}[\\s()\\w]*,?\\s*\\d{14}[\\s()\\w]*";
-//        lotRegex = "Lot\\sNumbers:\\s*([\\w+,\\s]+)";
-//
-//        Pattern prodPattern = Pattern.compile(prodregex);
-//        udiPattern=Pattern.compile(udiregex);
-//        Pattern lotPattern=Pattern.compile(lotRegex);
-//
-//        Matcher prodMatcher = prodPattern.matcher(input);
-//        udiMatcher = udiPattern.matcher(input);
-//        lotMatcher = lotPattern.matcher(input);
-//
-//        while ((prodMatcher.find()) && udiMatcher.find() && lotMatcher.find()) {
-//
-//            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-//            deviceInfo.product_number.add(prodMatcher.group().substring(12));
-//            deviceInfo.UDI.add(udiMatcher.group().substring(6));
-//            deviceInfo.lot_number.add(lotMatcher.group().substring(12));
-//
-//
-//
-//
-//            objInfoList.add(deviceInfo);
-//        }
-
-
-        //--------------------------------------
-    if(done){
-        return;
-    }
-         reg1 = "Item\\s*Numbers?:\\s*(\\w+)";
-         reg3 = "UDI/GTIN\\s*[\\w()]*:?\\s*(\\w+),\\s*UDI/GTIN\\s*[\\w()]*:?\\s*(\\w+)";
-         reg2 = "Lot\\s*Numbers?:?\\s*(\\w+)";
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-        while (mat1.find() && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.item_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat3.group(1));
-            deviceInfo.UDI.add(mat3.group(2));
-            deviceInfo.lot_number.add(mat2.group(1));
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-        //--------------------------------------
-        if(done){
-            return;
-        }
-        reg1 = "Item\\s*Number:\\s*(\\w+)";
-        reg3 = "[\\w()]*\\s*UDI/GTIN\\s*:?\\s*(\\w+),\\s*[\\w()]*\\s*UDI/GTIN\\s*:?\\s*(\\w+)";
-        reg2 = "Lot\\s*Numbers?:?\\s*(\\w+)";
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-        while (mat1.find() && mat2.find() && mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.item_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat3.group(1));
-            deviceInfo.UDI.add(mat3.group(2));
-            deviceInfo.lot_number.add(mat2.group(1));
-
-            objInfoList.add(deviceInfo);
-
-            done=true;
-        }
-
-        //--------------------------------------
-        if(done){
-            return;
-        }
-        reg1 = "Model\\s*Numbers?:?\\s*(\\w+)";
-        reg2 = "UDI/DI\\s*:?\\(\\w*\\)\\s*(\\w+),\\s*UDI/DI\\s*:?\\(\\w*\\)\\s*(\\w+)";
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-
-
-        while (mat1.find() && mat2.find()) {
+        Matcher modelMat = modelPat.matcher(input);
+        Matcher udiMat = udiPat.matcher(input);
+        Matcher serialMat = serialPat.matcher(input);
+        Matcher gtinMat = gtinPat.matcher(input);
+        Matcher batchMat = batchPat.matcher(input);
+        Matcher lotMat = lotPat.matcher(input);
+        Matcher productMat = productPat.matcher(input);
+        Matcher partMat = partPat.matcher(input);
+        Matcher upnMat = upnPat.matcher(input);
+        Matcher upcMat = upcPat.matcher(input);
+        Matcher kitMat = kitPat.matcher(input);
+        Matcher refMat = refPat.matcher(input);
+        Matcher reorderMat = reorderPat.matcher(input);
+        Matcher catalogMat = catalogPat.matcher(input);
+        Matcher itemMat = itemPat.matcher(input);
+        while (modelMat.find() && udiMat.find() && serialMat.find() && gtinMat.find() && upnMat.find() && upcMat.find()
+                && itemMat.find() && productMat.find() && partMat.find() && catalogMat.find() && batchMat.find()
+                && lotMat.find() && kitMat.find() && refMat.find() && reorderMat.find()) {
             OutputObj deviceInfo = new OutputObj();
-            deviceInfo.recall_number=recall;
-            deviceInfo.model_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat2.group(1));
-            deviceInfo.UDI.add(mat2.group(2));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-        //--------------------------------------
-        if(done){
-            return;
-        }
-        reg1 = "REF\\s*(\\w+)";
-        reg2 = "GTIN\\s*\\(01\\)\\s*(\\w+)";
-        reg3="Lot\\s*Numbers?\\s*(\\w+)";
-
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-
-        while (mat1.find() && mat2.find()&& mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.ref_number.add(mat1.group(1));
-            deviceInfo.GTIN.add(mat2.group(1));
-            deviceInfo.lot_number.add(mat3.group(1));
-
-
-            objInfoList.add(deviceInfo);
-
-            done=true;
-        }
-        //--------------------------------------
-        if(done){
-            return;
-        }
-        reg1 = "REF\\s*(\\w+)";
-        reg2 = "GTIN\\s*(\\w+)";
-        reg3="Batch\\s*Numbers?:?\\s*(\\w+)";
-
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-
-        while (mat1.find() && mat2.find()&& mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.ref_number.add(mat1.group(1));
-            deviceInfo.GTIN.add(mat2.group(1));
-            deviceInfo.batch_number.add(mat3.group(1));
-
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-        //------------------------------------------------------------------------------------------------------------------
-        if(done){
-            return;
-        }
-        reg1 = "Reorder\\s*#?:?\\s*(\\w+)";
-        reg2 = "UDI/DI:?\\s*\\(01\\)\\s*(\\w+)\\s*\\(\\w+\\),\\s*\\(01\\)\\s*(\\w+)\\s*\\(\\w+\\)";
-        reg3="Lot\\s*Numbers?\\s*(\\w+)";
-
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-
-        while (mat1.find() && mat2.find()&& mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.reorder_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat2.group(1));
-            deviceInfo.lot_number.add(mat3.group(1));
-
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-        //--------------------------------------
-    if(done){
-        return;
-    }
-        reg1 = "Reorder\\s*:?\\s*(\\w+)";
-        reg2 = "UDI-?/?DI:?\\s*(\\w+)";
-        reg3="Lot\\s*code:?\\s*(\\w+)";
-
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-
-        while (mat1.find() && mat2.find()&& mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.reorder_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat2.group(1));
-            deviceInfo.lot_number.add(mat3.group(1));
-
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-        //--------------------------------------
-    if(done){
-        return;
-    }
-        reg1 = "Reorder\\s*Number:?\\s*(\\w+)";
-        reg2 = "GTIN:?\\s*(\\w+)";
-        reg3="Lot\\s*#?\\s*(\\w+)";
-
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-
-        while (mat1.find() && mat2.find()&& mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.reorder_number.add(mat1.group(1));
-            deviceInfo.GTIN.add(mat2.group(1));
-            deviceInfo.lot_number.add(mat3.group(1));
-
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-        //------------------------------------------
-        if(done){
-            return;
-        }
-
-        reg1 = "Model\\s*Numbers?\\s*:?\\s*(\\w+)";
-        reg2 = "UDI-?/?DI:?\\s*(\\(\\w+\\))?\\s*\\(01\\)\\s*(\\w+)\\s*,\\s*UDI/?-?DI:?\\s*(\\(\\w+\\))?\\s*\\(01\\)\\s*(\\w+)";
-        reg3="Lot\\s*Numbers?:?\\s*(\\w+)";
-
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-
-        while (mat1.find() && mat2.find()&& mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.model_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat2.group(4));
-            deviceInfo.UDI.add(mat2.group(2));
-            deviceInfo.lot_number.add(mat3.group(1));
-
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-        //--------------------------------------
-    if(done){
-        return;
-    }
-        reg1 = "PN:?\\s*(\\w+)";
-        reg2 = "Items?\\s*(\\w+)";
-        String reg4 = "UDI/DI\\s*\\(\\w+\\)\\s*(\\w+)";
-        reg3="Lot\\s*numbers?\\s*(\\w+)";
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-
-
-
-        Pattern pat4 = Pattern.compile(reg4,Pattern.CASE_INSENSITIVE);
-
-
-
-        Matcher mat4 = pat4.matcher(input);
-
-
-        while (mat1.find() && mat2.find()&& mat3.find()&& mat4.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.product_number.add(mat1.group(1));
-            deviceInfo.item_number.add(mat2.group(1));
-            deviceInfo.lot_number.add(mat3.group(1));
-            deviceInfo.UDI.add(mat4.group(1));
-
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-
-        //-------------------------------------------------------------------------------------
-        reg1="Model\\s*Number\\s*:\\s*(\\w+),?;?\\s*UPC\\s*Number:\\s*(\\w+)";
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-
-        mat1 = pat1.matcher(input);
-
-        while (mat1.find() ) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-
-            deviceInfo.model_number.add(mat1.group(1));
-            deviceInfo.UPC.add(mat1.group(2));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-    }
-
-    public static void Boston(String input, Set<OutputObj> objInfoList,String recall){
-
-
-
-        boolean done=false;
-        String reg1 = "MODEL\\s*-\\s*([\\w\\s]*)\\(\\w*\\)";
-        String reg2 = "REF\\s*(\\w+)";
-        String reg3 = "UDI/DI\\s*(\\w+)";
-        String reg4 = "Batch\\s*Numbers?:([\\s\\w,]+)";
-
-        Pattern pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        Pattern pat2 = Pattern.compile(reg2);
-        Pattern pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-        Pattern pat4 = Pattern.compile(reg4,Pattern.CASE_INSENSITIVE);
-
-        Matcher mat1 = pat1.matcher(input);
-        Matcher mat2 = pat2.matcher(input);
-        Matcher mat3 = pat3.matcher(input);
-        Matcher mat4 = pat4.matcher(input);
-
-        while ((mat1.find()) && mat2.find() && mat3.find() && mat4.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.ref_number.add(mat2.group(1));
-            deviceInfo.UDI.add(mat3.group(1));
-            deviceInfo.model_number.add(mat1.group(1));
-            deviceInfo.batch_number.add(mat4.group(1));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-
-        //--------------------------------------------------------------------------------------------------------
-        if(done){
-            return;
-        }
-
-
-
-         reg1 = "GTIN numbers in the U.S.:?([\\w\\s,]*)";
-         reg2 = "GTIN numbers OUS:?([\\w\\s,]*)";
-         reg3 ="All\\s*serial\\s*numbers?";
-         pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-         pat2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-         pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-         mat1 = pat1.matcher(input);
-         mat2 = pat2.matcher(input);
-         mat3 = pat3.matcher(input);
-
-        while (mat1.find() && mat2.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.GTIN.add(mat2.group(1));
-            deviceInfo.GTIN.add(mat1.group(1));
-            if(mat3.find()) {
-
-
-                deviceInfo.serial_number.add(mat3.group());
+            deviceInfo.recalling_firm = name;
+            deviceInfo.recall_number = recall;
+            if (!model.isEmpty()) {
+                for (Integer idx : modelIdxList) {
+                    deviceInfo.model_number.add(modelMat.group(idx));
+                }
             }
+
+            if (!udi.isEmpty()) {
+                for (Integer idx : udiIdxList) {
+                    if(udiMat.group(idx)!=null) {
+                        deviceInfo.UDI.add(udiMat.group(idx));
+                    }
+                    else{
+                        System.out.println(recall);
+                    }
+                }
+            }
+
+            if (!serial.isEmpty()) {
+                for (Integer idx : serialIdxList) {
+                    deviceInfo.serial_number.add(serialMat.group(idx));
+                }
+
+            }
+
+            if (!gtin.isEmpty()) {
+
+                for (Integer idx : gtinIdxList) {
+                    deviceInfo.GTIN.add(gtinMat.group(idx));
+                }
+
+            }
+
+            if (!upn.isEmpty()) {
+                for (Integer idx : upnIdxList) {
+                    deviceInfo.UPN.add(upnMat.group(idx));
+                }
+            }
+
+            if (!upc.isEmpty()) {
+                for (Integer idx : upcIdxList) {
+                    deviceInfo.UPC.add(upcMat.group(idx));
+                }
+
+            }
+
+            if (!item.isEmpty()) {
+                for (Integer idx : itemIdxList) {
+                    deviceInfo.item_number.add(itemMat.group(1));
+                }
+
+            }
+
+            if (!product.isEmpty()) {
+                for (Integer idx : productIdxList) {
+                    deviceInfo.product_number.add(productMat.group(idx));
+                }
+
+            }
+
+            if (!part.isEmpty()) {
+                for (Integer idx : partIdxList) {
+                    deviceInfo.part_number.add(partMat.group(idx));
+                }
+
+            }
+
+            if (!catalog.isEmpty()) {
+                for (Integer idx : catalogIdxList) {
+                    deviceInfo.catalog_number.add(catalogMat.group(idx));
+                }
+
+            }
+
+            if (!batch.isEmpty()) {
+                for (Integer idx : batchIdxList) {
+                    deviceInfo.batch_number.add(batchMat.group(idx));
+                }
+
+            }
+
+            if (!lot.isEmpty()) {
+                for (Integer idx : lotIdxList) {
+                    deviceInfo.lot_number.add(lotMat.group(idx));
+                }
+
+            }
+
+            if (!kit.isEmpty()) {
+                for (Integer idx : kitIdxList) {
+                    deviceInfo.kit_number.add(kitMat.group(idx));
+                }
+
+            }
+
+            if (!ref.isEmpty()) {
+                for (Integer idx : refIdxList) {
+                    deviceInfo.ref_number.add(refMat.group(idx));
+                }
+
+            }
+
+            if (!reorder.isEmpty()) {
+                for (Integer idx : reorderIdxList)
+                    deviceInfo.reorder_number.add(reorderMat.group(idx));
+
+            }
+
             objInfoList.add(deviceInfo);
-            done=true;
+
         }
-
-        //--------------------------------------------------------------------------------------------------------
-        if(done){return;}
-        reg1 = "Catalog\\s*numbers?\\s*(\\w*)";
-        reg2 = "GTIN:?\\s*(\\w*)";
-        reg3 ="Lot[\\w/\\s]*:?\\s*([\\w\\s,]*)";
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-        while (mat1.find() && mat2.find()&& mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.catalog_number.add(mat1.group(1));
-            deviceInfo.GTIN.add(mat2.group(1));
-
-
-
-                deviceInfo.lot_number.add(mat3.group(1));
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-        //--------------------------------------------------------------------------------------------------------
-    if(done){return;}
-        reg1 = "(Outer\\s*box\\s*UPN?#\\s*(\\w+),\\s*Inner\\s*box\\s*UPN\\s*#\\s*(\\w+))";
-        reg2 = "GTIN\\):\\s*(\\w+)";
-        reg3 ="Lot\\s*/\\s*Batch\\s*#?\\s([\\w,\\s]+)";
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-        while (mat1.find() && mat2.find()&& mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.UPN.add(mat1.group(1));
-            deviceInfo.UPN.add(mat1.group(2));
-            deviceInfo.GTIN.add(mat2.group(1));
-
-
-
-            deviceInfo.lot_number.add(mat3.group(1));
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-
-        //--------------------------------------------------------------------------------------------------------
-
-        if(done){return;}
-        reg1 = "GTIN:?\\s*(\\w+)";
-        reg2 = "UPN:?\\s*(\\w+)";
-        reg3 ="Lot\\s*Numbers?:([\\s,\\d]+)";
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-        while (mat1.find() && mat2.find()&& mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.UPN.add(mat2.group(1));
-            deviceInfo.GTIN.add(mat1.group(1));
-            deviceInfo.lot_number.add(mat3.group(1));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-//--------------------------------------------------------------------------------------------------------
-        if(done){return;}
-        reg1 = "UPN\\s(\\w+),\\sGTIN\\s\\(UDI-DI\\)\\s(\\w+),\\sLots?\\s([\\w,\\s]+)";
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-
-
-        while (mat1.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.UPN.add(mat1.group(1));
-            deviceInfo.GTIN.add(mat1.group(2));
-            deviceInfo.lot_number.add(mat1.group(3));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-//---------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------------------------
-        if(done){return;}
-        reg1 = "(\\w)\\)\\s*(\\w+),\\s*UDI/DI\\s*(\\w+),\\s*ALL\\s*LOT\\s*CODES";
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-
-
-        while (mat1.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.UDI.add(mat1.group(3));
-            deviceInfo.UPN.add(mat1.group(2));
-            deviceInfo.lot_number.add("ALL LOT CODES");
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-
-        //--------------------------------------------------------------------------------------------------
-        if(done){return;}
-        reg1 = "REF:?\\s*(\\w*)";
-        reg2 = "UDI/?-?DI:?\\s*(\\w+)";
-        reg3 = "Lot\\s*Numbers?:?([\\s,\\d]*)";
-
-        pat1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        pat2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-        pat3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        mat1 = pat1.matcher(input);
-        mat2 = pat2.matcher(input);
-        mat3 = pat3.matcher(input);
-
-
-        while (mat1.find() && mat2.find()&& mat3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.ref_number.add(mat1.group(1));
-            deviceInfo.UDI.add(mat2.group(1));
-            deviceInfo.lot_number.add(mat3.group(1));
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
 
     }
 
-    public static void Cardinal (String input, Set<OutputObj> objInfoList,String recall){
-        boolean done = false;
-        String reg1 ="Model\\s*(\\w+)";
-        String reg2="Lot\\s*#?(\\w+)";
-        String reg3 = "UDI-?/?DI:?\\s*([\\w\\s(),]+)";
-
-        Pattern regPattern1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        Pattern regPattern2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-        Pattern regPattern3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-        Matcher regMatcher1 = regPattern1.matcher(input);
-        Matcher regMatcher2 = regPattern2.matcher(input);
-        Matcher regMatcher3 = regPattern3.matcher(input);
-
-        while(  regMatcher1.find()  && regMatcher2.find() && regMatcher3.find() ){
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.model_number.add(regMatcher1.group(1));
-            deviceInfo.lot_number.add(regMatcher2.group(1));
-            deviceInfo.UDI.add(regMatcher3.group(1));
-
-            objInfoList.add(deviceInfo);
-
-    done = true;
+}
 
 
+    private static List<Integer> grpIdx(String Idx){
+        List<Integer> udiIdxList = new ArrayList<>();
+        if(!Idx.isEmpty()) {
+            String[] parts = Idx.split(",");
+
+            // Convert each part to an integer and store in a list
+
+            for (String part : parts) {
+                udiIdxList.add(Integer.parseInt(part));
+            }
         }
-
-
-        //-----------------------------------------------------------------------
-        if(done){return;}
-        reg1= "REF\\s*:?\\s*([\\w-]+)";
-        reg2="UDI/DI\\s*(\\w+)\\s*\\(\\w+\\),\\s*(\\w+)\\s*\\(\\w+\\),\\s*(\\w+)\\s*\\(\\w+\\)";
-        reg3 = "Lot\\s*Numbers?:?([\\w\\s,]+)";
-
-        regPattern1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        regPattern2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-        regPattern3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-        regMatcher1 = regPattern1.matcher(input);
-        regMatcher2 = regPattern2.matcher(input);
-        regMatcher3 = regPattern3.matcher(input);
-
-        while(  regMatcher1.find()  && regMatcher2.find() && regMatcher3.find() ){
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.ref_number.add(regMatcher1.group(1));
-            deviceInfo.UDI.add(regMatcher2.group(1));
-            deviceInfo.UDI.add(regMatcher2.group(2));
-            deviceInfo.UDI.add(regMatcher2.group(3));
-            deviceInfo.lot_number.add(regMatcher3.group(1));
-
-            objInfoList.add(deviceInfo);
-
-
-
-    done=true;
+        else{
+            udiIdxList.add(1);
         }
-
-        //--------------------------------------------------
-        if ((done)) {
-            return;}
-
-            reg1= "Cat\\.\\s*(\\w+)";
-            reg2="Lot\\s*#?(\\w+)";
-            reg3="UDI-?/?DI\\s*(\\d+)";
-
-        // Compile the regex pattern
-       regPattern1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-       regPattern2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-       regPattern3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-        // Matcher for the regex pattern
-        regMatcher1 = regPattern1.matcher(input);
-        regMatcher2 = regPattern2.matcher(input);
-        regMatcher3 = regPattern3.matcher(input);
-
-        while (regMatcher1.find() && regMatcher2.find() && regMatcher3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.catalog_number.add(regMatcher1.group(1));
-            deviceInfo.lot_number.add(regMatcher2.group(1));
-            deviceInfo.UDI.add(regMatcher3.group(1));
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-        //--------------------------------------------------
-        if ((done)) {
-            return;}
-
-            reg1= "Cat\\.?\\s*(\\w+)";
-        reg2="all lots";
-
-
-        // Compile the regex pattern
-       regPattern1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-       regPattern2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-
-        // Matcher for the regex pattern
-        regMatcher1 = regPattern1.matcher(input);
-        regMatcher2 = regPattern2.matcher(input);
-
-        while (regMatcher1.find() && regMatcher2.find() ) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.catalog_number.add(regMatcher1.group(1));
-            deviceInfo.lot_number.add(regMatcher2.group());
-
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-
-//--------------------------------------------------
-
-        if(done){return;}
-        reg1= "Product\\s*Code:\\s*(\\w+)";
-        reg2="UDI/?-?DI:?\\s*(\\w+)\\s*-\\s*each,\\s*(\\w+)\\s*-\\s*box,\\s*(\\w+)\\s*-\\s*case";
-        reg3="Lot\\s*Numbers?:?\\s*([\\w,\\s]+)";
-
-        regPattern1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        regPattern2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-        regPattern3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-        regMatcher1 = regPattern1.matcher(input);
-        regMatcher2 = regPattern2.matcher(input);
-        regMatcher3 = regPattern3.matcher(input);
-
-        while(  regMatcher1.find()  && regMatcher2.find() && regMatcher3.find() ){
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-            deviceInfo.product_number.add(regMatcher1.group(1));
-            deviceInfo.UDI.add(regMatcher2.group(1));
-            deviceInfo.UDI.add(regMatcher2.group(2));
-            deviceInfo.UDI.add(regMatcher2.group(3));
-            deviceInfo.lot_number.add(regMatcher3.group(1));
-
-            objInfoList.add(deviceInfo);
-            done=true;
-
-
-        }
-
-//--------------------------------------------------
-        if(done){return;}
-        reg1="UDI/?-?DI:?\\s*(\\w+)\\s*\\(\\w+\\),\\s*(\\w+)\\s*\\(\\w+\\)";
-
-        reg2="Lot\\s*Numbers?:?(\\s*[\\w,\\s]+)";
-        reg3="REF\\s*([-\\w]+)";
-
-        regPattern1 = Pattern.compile(reg1,Pattern.CASE_INSENSITIVE);
-        regPattern2 = Pattern.compile(reg2,Pattern.CASE_INSENSITIVE);
-        regPattern3 = Pattern.compile(reg3,Pattern.CASE_INSENSITIVE);
-
-
-        regMatcher1 = regPattern1.matcher(input);
-        regMatcher2 = regPattern2.matcher(input);
-        regMatcher3 = regPattern3.matcher(input);
-
-        while( regMatcher2.find() && regMatcher1.find()&& regMatcher3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
-
-            deviceInfo.UDI.add(regMatcher1.group(1));
-            deviceInfo.UDI.add(regMatcher1.group(2));
-            deviceInfo.lot_number.add(regMatcher2.group(1));
-
-                deviceInfo.ref_number.add(regMatcher3.group(1));
-
-
-            objInfoList.add(deviceInfo);
-            done=true;
-        }
-
-
-
+        return udiIdxList;
 
     }
 
-    public static void Baxter(String input, Set<OutputObj> objInfoList,String recall) {
+
+    public static void Baxter(String input, Set<OutputObj> objInfoList,String recall,String name) {
 
         boolean done = false;
 
@@ -1092,6 +280,7 @@ public class DeviceInfoExtractor {
 
         while (regMatcher1.find() && regMatcher2.find() && regMatcher3.find()) {
             OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
+            deviceInfo.recalling_firm=name;
             deviceInfo.product_number.add(regMatcher1.group(1));
             deviceInfo.UDI.add(regMatcher2.group(1));
             deviceInfo.serial_number.add(regMatcher3.group(1));
@@ -1119,7 +308,8 @@ public class DeviceInfoExtractor {
         regMatcher3 = regPattern3.matcher(input);
 
         while (regMatcher1.find() && regMatcher2.find() && regMatcher3.find()) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
+            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;            deviceInfo.recalling_firm=name;
+
             deviceInfo.ref_number.add(regMatcher1.group(1));
             deviceInfo.UDI.add(regMatcher2.group(1));
             deviceInfo.serial_number.add(regMatcher3.group(1));
@@ -1142,7 +332,8 @@ public class DeviceInfoExtractor {
 
 
         while (regMatcher1.find() ) {
-            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
+            OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;            deviceInfo.recalling_firm=name;
+
             deviceInfo.item_number.add(regMatcher1.group(1));
             deviceInfo.UDI.add(regMatcher1.group(2));
 
@@ -1164,6 +355,7 @@ public class DeviceInfoExtractor {
 
         while (regMatcher1.find() ) {
             OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
+            deviceInfo.recalling_firm=name;
 
             deviceInfo.UDI.add(regMatcher1.group(2));
             deviceInfo.product_number.add(regMatcher1.group(1));
@@ -1185,6 +377,7 @@ public class DeviceInfoExtractor {
 
         while (regMatcher1.find() ) {
             OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
+            deviceInfo.recalling_firm=name;
 
             deviceInfo.UDI.add(regMatcher1.group(2));
             deviceInfo.product_number.add(regMatcher1.group(1));
@@ -1211,6 +404,7 @@ public class DeviceInfoExtractor {
 
         while (regMatcher1.find() && regMatcher2.find() ) {
             OutputObj deviceInfo = new OutputObj(); deviceInfo.recall_number=recall;
+            deviceInfo.recalling_firm=name;
 
             deviceInfo.UDI.add(regMatcher1.group(1));
             deviceInfo.ref_number.add(regMatcher2.group(1));
@@ -1421,12 +615,12 @@ public class DeviceInfoExtractor {
 
         int created = 0;
 
-        // Define regex patterns
+        // Define regex.json patterns
         String partNoPattern = "Part\\s*No\\.\\s*([\\w-]+)";
         String gtinPattern = "GTIN:\\s*(\\d+)";
         String lotNoPattern = "Lot\\s*No\\.\\s*([\\w,\\s*]+)";
 
-        // Compile regex patterns
+        // Compile regex.json patterns
         Pattern partNoRegex = Pattern.compile(partNoPattern,Pattern.CASE_INSENSITIVE);
         Pattern gtinRegex = Pattern.compile(gtinPattern,Pattern.CASE_INSENSITIVE);
         Pattern lotNoRegex = Pattern.compile(lotNoPattern,Pattern.CASE_INSENSITIVE);
@@ -1476,7 +670,7 @@ public class DeviceInfoExtractor {
         String gtinPattern2 = "GTIN:?\\s*(\\w+)";
         String lotNumbersPattern2 = "Lot\\s*Numbers:?\\s*([\\w,\\s]+)";
 
-        // Compile regex patterns
+        // Compile regex.json patterns
         Pattern partNumberRegex2 = Pattern.compile(partNumberPattern2,Pattern.CASE_INSENSITIVE);
         Pattern gtinRegex2 = Pattern.compile(gtinPattern2,Pattern.CASE_INSENSITIVE);
         Pattern lotNumbersRegex2 = Pattern.compile(lotNumbersPattern2,Pattern.CASE_INSENSITIVE);
@@ -1523,7 +717,7 @@ public class DeviceInfoExtractor {
         String udiDiPattern3 = "UDI-DI\\s*:?\\s*([\\w()]+)";
         String lotNumberPattern3 = "Lot\\s*Number\\s*:\\s*(\\d+(?: \\d+)*)";
 
-        // Compile regex patterns
+        // Compile regex.json patterns
         Pattern catalogNumberRegex3 = Pattern.compile(catalogNumberPattern3,Pattern.CASE_INSENSITIVE);
         Pattern udiDiRegex3 = Pattern.compile(udiDiPattern3,Pattern.CASE_INSENSITIVE);
         Pattern lotNumberRegex3 = Pattern.compile(lotNumberPattern3,Pattern.CASE_INSENSITIVE);
@@ -1571,7 +765,7 @@ public class DeviceInfoExtractor {
         String gtinPattern4 = "GTIN:?\\s*(\\d+)";
         String lotNumbersPattern4 = "Lot\\s*Numbers:?\\s*(\\d+(?:,\\s*\\d+)*)";
 
-        // Compile regex patterns
+        // Compile regex.json patterns
         Pattern productNumberRegex4 = Pattern.compile(productNumberPattern4,Pattern.CASE_INSENSITIVE);
         Pattern gtinRegex4 = Pattern.compile(gtinPattern4,Pattern.CASE_INSENSITIVE);
         Pattern lotNumbersRegex4 = Pattern.compile(lotNumbersPattern4,Pattern.CASE_INSENSITIVE);
@@ -1616,10 +810,10 @@ public class DeviceInfoExtractor {
     }
 
     public static  void Becton(String input, Set<OutputObj> objInfoList,String recall_number){
-        // Define regex patterns
+        // Define regex.json patterns
         String entryPattern = "Catalog No\\.\\s*(\\d+).*?UDI-DI\\s*([\\w;]+).*?Lots?\\s*([\\d\\s]+)";
 
-        // Compile regex pattern
+        // Compile regex.json pattern
         Pattern entryRegex = Pattern.compile(entryPattern,Pattern.CASE_INSENSITIVE);
 
         // Match pattern
@@ -1653,12 +847,12 @@ public class DeviceInfoExtractor {
 
         int created = 0;
 
-        // Define regex patterns
+        // Define regex.json patterns
         String productNumberPattern = "Product\\s*Number:?\\s*(\\w+)";
         String udiDiPattern = "UDI-?/?DI:?\\s*(\\d+)";
         String lotNumbersPattern = "Lot\\s*Numbers:?\\s*([\\d,\\s]+)";
 
-        // Compile regex patterns
+        // Compile regex.json patterns
         Pattern productNumberRegex = Pattern.compile(productNumberPattern,Pattern.CASE_INSENSITIVE);
         Pattern udiDiRegex = Pattern.compile(udiDiPattern,Pattern.CASE_INSENSITIVE);
         Pattern lotNumbersRegex = Pattern.compile(lotNumbersPattern,Pattern.CASE_INSENSITIVE);
@@ -1701,13 +895,13 @@ public class DeviceInfoExtractor {
         created = 0;
 
 
-        // Define regex patterns
+        // Define regex.json patterns
         String catalogNumberPattern2 = "Catalog\\s*Number:?\\s*(\\S+)";
         String udiPattern2 = "UDI:?\\s*(\\d+)";
         String upnPattern2 = "UPN:?\\s*(\\S+)";
         String lotNumberPattern2 = "Lot\\s*Numbers?:?\\s*([\\d\\s]+)";
 
-        // Compile regex patterns
+        // Compile regex.json patterns
         Pattern catalogNumberRegex2 = Pattern.compile(catalogNumberPattern2,Pattern.CASE_INSENSITIVE);
         Pattern udiRegex2 = Pattern.compile(udiPattern2,Pattern.CASE_INSENSITIVE);
         Pattern upnRegex2 = Pattern.compile(upnPattern2,Pattern.CASE_INSENSITIVE);
@@ -2068,7 +1262,7 @@ public class DeviceInfoExtractor {
         OutputObj outputObj = new OutputObj();
         outputObj.recall_number = recall_number;
 
-        // Define the regex patterns to extract the required information
+        // Define the regex.json patterns to extract the required information
         Pattern refPattern = Pattern.compile("Ref No:\\s*([^\\s]+)");
         Pattern catPattern = Pattern.compile("Catalog Number:\\s*([^\\s]+)");
         Pattern udiPattern = Pattern.compile("UDI(-DI)?:?\\s*([^\\s]+)");
@@ -2339,27 +1533,7 @@ public class DeviceInfoExtractor {
 
         }
     }
-    public static void BiometInc(String input, Set<OutputObj> objInfoList, String recall_number){
-        Pattern pattern = Pattern.compile("Item Number:\\s*(\\w+)\\s*Lot Numbers/UDI\\s*(.*?)\\s*$", Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(input);
-        while (matcher.find()) {
-            String itemNumber = matcher.group(1).trim();
-            String lotUdiString = matcher.group(2).trim();
 
-            // Extract lot number and UDI number combinations
-            Pattern lotUdiPattern = Pattern.compile("(\\w+)\\s*\\(\\d+\\)\\d+\\(17\\)\\d+\\(10\\)\\d+");
-            Matcher lotUdiMatcher = lotUdiPattern.matcher(lotUdiString);
-
-            while (lotUdiMatcher.find()) {
-                OutputObj obj = new OutputObj();
-                obj.recall_number = recall_number;
-                obj.item_number.add(itemNumber);
-                obj.lot_number.add(lotUdiMatcher.group(1));
-                obj.UDI.add(lotUdiMatcher.group());
-                objInfoList.add(obj);
-            }
-        }
-    }
 
     public static void BiomerieuxInc(String input, Set<OutputObj> objInfoList, String recall_number){
         // Regex pattern to match catalog number, UDI, and batch numbers
@@ -2418,34 +1592,41 @@ public class DeviceInfoExtractor {
         }
     }
 
-    public static Set<OutputObj> extractDeviceInfo(String input, String firmname, String recall) {
+    public static Set<OutputObj> extractDeviceInfo(String input, String firmname, String recall) throws IOException {
         Set<OutputObj> objInfoList = new HashSet<>();
-        if (Objects.equals(firmname, "Exactech, Inc.")) {
-            DeviceInfoExtractor.Exatech(input, objInfoList, recall);
-        } else if (Objects.equals(firmname, "Fresenius Medical Care Holdings, Inc.")) {
-            DeviceInfoExtractor.Fresenius(input, objInfoList, recall);
-        } else if (Objects.equals(firmname, "MEDLINE INDUSTRIES, LP - Northfield")) {
-            DeviceInfoExtractor.Medline(input, objInfoList, recall);
+
+            if(Objects.equals(firmname, "Exactech, Inc."))
+        {
+            DeviceInfoExtractor.ExtractData(input, objInfoList, recall, "Exactech, Inc.");
+        }
+            else if (Objects.equals(firmname, "Fresenius Medical Care Holdings, Inc."))
+        {
+            DeviceInfoExtractor.ExtractData(input, objInfoList, recall, "Fresenius Medical Care Holdings, Inc.");
+        }
+
+
+         else if (Objects.equals(firmname, "MEDLINE INDUSTRIES, LP - Northfield")) {
+            DeviceInfoExtractor.ExtractData(input, objInfoList, recall,firmname);
         } else if (Objects.equals(firmname, "Boston Scientific Corporation")) {
-            DeviceInfoExtractor.Boston(input, objInfoList, recall);
+            DeviceInfoExtractor.ExtractData(input, objInfoList, recall,firmname);
         } else if (Objects.equals(firmname, "Cardinal Health 200, LLC")) {
-            DeviceInfoExtractor.Cardinal(input, objInfoList, recall);
+            DeviceInfoExtractor.ExtractData(input, objInfoList, recall,firmname);
         } else if (Objects.equals(firmname, "Baxter Healthcare Corporation")) {
-            DeviceInfoExtractor.Baxter(input, objInfoList, recall);
+            DeviceInfoExtractor.Baxter(input, objInfoList, recall,firmname);
         } else if (Objects.equals(firmname, "Philips North America")) {
-            DeviceInfoExtractor.NonLLCPhilips(input, objInfoList, recall);
+            DeviceInfoExtractor.ExtractData(input, objInfoList, recall,firmname);
         }
         else if(Objects.equals(firmname, "Howmedica Osteonics Corp.")){
-            DeviceInfoExtractor.Howmedica(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if(Objects.equals(firmname, "Becton Dickinson & Co.")){
-            DeviceInfoExtractor.Becton(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if(Objects.equals(firmname, "Angiodynamics, Inc.")){
-            DeviceInfoExtractor.Angiodynamics(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if(Objects.equals(firmname, "Universal Meditech Inc.")){
-            DeviceInfoExtractor.Universal(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if(Objects.equals(firmname, "Aizu Olympus Co., Ltd.")){
             DeviceInfoExtractor.Aizu(input,objInfoList,recall);
@@ -2460,31 +1641,31 @@ public class DeviceInfoExtractor {
             DeviceInfoExtractor.Integra(input,objInfoList,recall);
         }
         else if(Objects.equals(firmname, "Medtronic Inc., Cardiac Rhythm and Heart Failure (CRHF)")){
-            DeviceInfoExtractor.Medtronic(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if(Objects.equals(firmname, "Hobbs Medical, Inc.")){
-            DeviceInfoExtractor.Hobbs(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if(Objects.equals(firmname, "ROi CPS LLC")){
-            DeviceInfoExtractor.ROi(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if(Objects.equals(firmname, "C.R. Bard Inc")){
-            DeviceInfoExtractor.CRBARD(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if(Objects.equals(firmname, "Stryker Corporation")){
-            DeviceInfoExtractor.StrykerCorporation(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if(Objects.equals(firmname, "American Contract Systems, Inc.")){
-            DeviceInfoExtractor.AmericanContractSystems(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if((Objects.equals(firmname, "Biomerieux Inc"))){
-            DeviceInfoExtractor.BiomerieuxInc(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if((Objects.equals(firmname, "Linkbio Corp."))){
-            DeviceInfoExtractor.LinkbioCorp(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,firmname);
         }
         else if((Objects.equals(firmname, "Stradis Medical, LLC dba Stradis Healthcare"))){
-            DeviceInfoExtractor.StradisMedicalLLCdbaStradisHealthcare(input,objInfoList,recall);
+            DeviceInfoExtractor.ExtractData(input,objInfoList,recall,"Stradis Medical, LLC dba Stradis Healthcare");
         }
         return objInfoList;
 

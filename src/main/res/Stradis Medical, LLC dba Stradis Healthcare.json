@@ -1,0 +1,47 @@
+{
+  "patterns": [
+    {
+      "multvaludi": "1,2",
+      "multvalgtin": "",
+      "modelidx": "",
+      "itemidx": "",
+      "productidx": "",
+      "batchidx": "",
+      "catalogidx": "",
+      "refidx": "",
+      "reorderidx": "",
+      "partidx": "",
+      "upcidx": "",
+      "upnidx": "",
+      "kitidx": "",
+      "lotidx": "",
+      "serialidx": "",
+      "model": "",
+      "udi": "UDI/DI\\s*\\(case\\)\\s*([\\w-]+),\\s*UDI/DI\\s*\\(kit\\)\\s*([\\w-]+)",
+      "serial": "",
+      "gtin": "",
+      "product": "",
+      "batch": "",
+      "catalog": "",
+      "part": "",
+      "upc": "",
+      "upn": "",
+      "ref": "",
+      "reorder": "",
+      "item": "Item No\\.?\\s*([\\w-/]+)",
+      "kit": "",
+      "lot": "Serial/Lot\\s*Numbers?:?\\s*([\\w-]+)"
+    }
+  ]
+}
+
+
+
+
+
+
+
+
+
+
+

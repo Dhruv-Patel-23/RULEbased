@@ -1,0 +1,37 @@
+{
+  "patterns": [
+    {
+      "multvaludi": "",
+      "multvalgtin": "",
+      "modelidx": "",
+      "itemidx": "",
+      "productidx": "",
+      "batchidx": "",
+      "catalogidx": "",
+      "refidx": "",
+      "reorderidx": "",
+      "partidx": "",
+      "upcidx": "",
+      "upnidx": "",
+      "kitidx": "",
+      "lotidx": "",
+      "serialidx": "",
+      "model": "",
+      "udi": "UDI-DI\\s*(\\w+)",
+      "serial": "",
+      "gtin": "",
+      "product": "",
+      "batch": "",
+      "catalog": "Catalog\\s*No\\.\\s*(\\w+)",
+      "part": "",
+      "upc": "",
+      "upn": "",
+      "ref": "",
+      "reorder": "",
+      "item": "",
+      "kit": "",
+      "lot": "Lots?\\s*([\\w\\s,]+)"
+    }
+
+  ]
+}

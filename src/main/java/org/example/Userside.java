@@ -69,7 +69,8 @@ public class Userside {
 
             if((!temp.model_number.isEmpty()&&device.model_number.contains(temp.model_number.getFirst())) || (!temp.item_number.isEmpty() && device.item_number.contains(temp.item_number.getFirst())) || (!temp.product_number.isEmpty() && device.product_number.contains(temp.product_number.getFirst())) || (!temp.UDI.isEmpty() && device.UDI.contains(temp.UDI.getFirst()))){
 
-                System.out.println(device);
+               //-
+                // System.out.println(device);
 
             }
 
